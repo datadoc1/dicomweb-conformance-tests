@@ -5,7 +5,7 @@
 ## ⚡ ONE-LINE SOLUTION (Copy & Paste Ready)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/your-org/dicomweb-conformance-tests/main/test-pacs.sh | bash -s -- https://your-pacs-server.com
+curl -sSL https://raw.githubusercontent.com/datadoc1/dicomweb-conformance-tests/main/test-pacs.sh | bash -s -- https://your-pacs-server.com
 ```
 
 **That's it!** This single command will:
@@ -79,6 +79,104 @@ Modern healthcare **depends** on DICOMweb compliance, yet many PACS systems are 
 - 📧 **Vendor Email Template**: Ready to send to your PACS company
 - 📈 **Performance Metrics**: Response times and reliability data
 - ✅ **Compliance Scoring**: Objective measurement of DICOMweb compliance
+---
+
+## 🔍 **How to Find Your PACS DICOMweb Endpoint**
+
+### **For Enterprise PACS Systems (Agfa, Fuji, GE, Philips, etc.)**
+
+#### **Common DICOMweb Endpoint Patterns:**
+Most enterprise PACS systems use these URL patterns:
+
+- **`https://your-pacs-server.com/dicomweb`**
+- **`https://your-pacs-server.com/dicom-web`**
+- **`https://your-pacs-server.com/wado`**
+- **`https://your-pacs-server.com/dicom`**
+- **`https://your-pacs-server.com/api/dicomweb`**
+- **`https://your-pacs-server.com/api/dicom-web`**
+
+#### **How to Find the Correct Endpoint:**
+
+**1. Check Your PACS Documentation**
+- Look for "DICOMweb" or "WADO-RS" in vendor documentation
+- Search for "RESTful Services" or "Web Access"
+
+**2. Contact Your PACS Administrator**
+```bash
+# Tell them you need the DICOMweb endpoint URL
+# Example: "We need the DICOMweb endpoint URL for integration testing"
+```
+
+**3. Check PACS Web Interface**
+Most PACS systems have a web interface where you can find the DICOMweb URL:
+- Look for "API", "Web Services", or "Integration" sections
+- Check browser developer tools for API calls
+- Search for URLs containing "dicom" in the network tab
+
+**4. Common Vendor-Specific Locations:**
+
+**Agfa Enterprise PACS:**
+```
+https://your-agfa-server.com/dicomweb
+https://your-agfa-server.com/cs2000/dicomweb
+```
+
+**FUJI PACS:**
+```
+https://your-fuji-server.com/dicom-web
+https://your-fuji-server.com/synapse/dicomweb
+```
+
+**GE PACS:**
+```
+https://your-ge-server.com/dicomweb
+https://your-ge-server.com/centricity/dicomweb
+```
+
+**Philips PACS:**
+```
+https://your-philips-server.com/dicomweb
+https://your-philips-server.com/intellispace/dicomweb
+```
+
+**5. Test Common Endpoints**
+Our testing script will automatically try these endpoints:
+```bash
+# The script automatically tries:
+/dicomweb, /dicom-web, /wado, /dicom, /api/dicomweb, /api/dicom-web
+```
+
+### **For Local Orthanc Testing:**
+
+**Access the web interface at:**
+```
+http://localhost:8042/app/explorer.html
+```
+
+**Default credentials:**
+- Username: `orthanc`
+- Password: `orthanc`
+
+**DICOMweb endpoint:**
+```
+http://localhost:8042/dicom-web
+```
+
+### **Testing with Authentication:**
+
+If your PACS requires authentication, use these formats:
+
+```bash
+# Include credentials in the command
+python run_tests.py --pacs-url https://your-pacs.com/dicomweb \
+  --username your_username --password your_password
+
+# Or use the bash script with auth
+./test-pacs.sh --email https://your-pacs.com/dicomweb
+# (Then enter credentials when prompted)
+```
+
+---
 
 ---
 
@@ -87,7 +185,7 @@ Modern healthcare **depends** on DICOMweb compliance, yet many PACS systems are 
 ### **Method 1: One-Click Testing Script** ⭐ **RECOMMENDED**
 ```bash
 # Download and run the automated testing script
-curl -sSL https://raw.githubusercontent.com/your-org/dicomweb-conformance-tests/main/test-pacs.sh | bash -s -- https://your-pacs-server.com
+curl -sSL https://raw.githubusercontent.com/datadoc1/dicomweb-conformance-tests/main/test-pacs.sh | bash -s -- https://your-pacs-server.com
 ```
 
 ### **Method 2: Traditional Installation**
