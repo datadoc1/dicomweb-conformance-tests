@@ -1,0 +1,11 @@
+{
+  "pacsUrl": "http://localhost:8042/",
+  "username": "orthanc",
+  "password": "orhtanc",
+  "protocols": [
+    "QIDO",
+    "WADO"
+  ],
+  "timeout": 30,
+  "verbose": false
+}

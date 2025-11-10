@@ -1,0 +1,421 @@
+{
+  "dicom_part_18_version": "2023c",
+  "specification_reference": "DICOM Part 18: Web Access to DICOM Persistent Objects (DICOMweb)",
+  "specification_sources": {
+    "official_standard": "https://www.dicomstandard.org/using/dicomweb",
+    "nema_official": "https://dicom.nema.org/medical/dicom/current/output/html/part18.html",
+    "current_version": "https://www.dicomstandard.org/using/dicomweb/"
+  },
+  "last_updated": "2025-11-10T00:06:22.349Z",
+  "conformance_classification": {
+    "mandatory": {
+      "keyword": "SHALL",
+      "description": "Requirements that MUST be implemented for DICOMweb compliance",
+      "color_code": "#e74c3c"
+    },
+    "recommended": {
+      "keyword": "SHOULD", 
+      "description": "Requirements that are strongly advised but not mandatory",
+      "color_code": "#f39c12"
+    },
+    "optional": {
+      "keyword": "MAY",
+      "description": "Optional features that enhance interoperability",
+      "color_code": "#27ae60"
+    }
+  },
+  "protocols": {
+    "qido": {
+      "name": "QIDO-RS (Query Based on DICOM Object)",
+      "section": "10.6",
+      "official_reference": "https://www.dicomstandard.org/using/dicomweb/query-qido-rs/",
+      "description": "Query operations for finding and retrieving DICOM objects",
+      "endpoints": {
+        "studies": {
+          "url": "/studies",
+          "method": "GET",
+          "description": "Query studies in the DICOM archive",
+          "requirements": [
+            {
+              "dicom_section": "10.6.1",
+              "requirement": "SHALL implement QIDO-RS Studies endpoint",
+              "test_id": "QIDO_001",
+              "test_name": "Basic QIDO-RS Studies Endpoint",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies?{query} endpoint for querying studies"
+            },
+            {
+              "dicom_section": "10.6.3.3.1",
+              "requirement": "SHALL return application/dicom+json content type",
+              "test_id": "QIDO_002",
+              "test_name": "QIDO-RS Response Content-Type",
+              "classification": "mandatory",
+              "description": "Response SHALL include content-type: application/dicom+json"
+            },
+            {
+              "dicom_section": "10.6.2.1",
+              "requirement": "SHOULD support PatientID query parameter",
+              "test_id": "QIDO_003", 
+              "test_name": "Patient ID Query Support",
+              "classification": "recommended",
+              "description": "Server SHOULD support PatientID attribute matching for patient-level queries"
+            },
+            {
+              "dicom_section": "10.6.2.2",
+              "requirement": "SHOULD support StudyInstanceUID query parameter", 
+              "test_id": "QIDO_004",
+              "test_name": "Study Instance UID Query Support",
+              "classification": "recommended",
+              "description": "Server SHOULD support StudyInstanceUID attribute for unique study identification"
+            },
+            {
+              "dicom_section": "10.6.2.3",
+              "requirement": "SHOULD support limit query parameter",
+              "test_id": "QIDO_005",
+              "test_name": "Result Limiting Support", 
+              "classification": "recommended",
+              "description": "Server SHOULD support limit parameter for result pagination (e.g., limit=10)"
+            }
+          ]
+        },
+        "series": {
+          "url": "/studies/{study}/series",
+          "method": "GET", 
+          "description": "Query series within a study",
+          "requirements": [
+            {
+              "dicom_section": "10.6.1",
+              "requirement": "SHALL implement QIDO-RS Series endpoint",
+              "test_id": "QIDO_006",
+              "test_name": "QIDO-RS Series Endpoint",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies/{study}/series?{query} endpoint"
+            },
+            {
+              "dicom_section": "10.6.2.4", 
+              "requirement": "SHOULD support SeriesInstanceUID query parameter",
+              "test_id": "QIDO_007",
+              "test_name": "Series Instance UID Query Support",
+              "classification": "recommended", 
+              "description": "Server SHOULD support SeriesInstanceUID attribute for series identification"
+            }
+          ]
+        },
+        "instances": {
+          "url": "/studies/{study}/series/{series}/instances", 
+          "method": "GET",
+          "description": "Query instances within a series",
+          "requirements": [
+            {
+              "dicom_section": "10.6.1",
+              "requirement": "SHALL implement QIDO-RS Instances endpoint",
+              "test_id": "QIDO_008",
+              "test_name": "QIDO-RS Instances Endpoint", 
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies/{study}/series/{series}/instances?{query} endpoint"
+            },
+            {
+              "dicom_section": "10.6.2.5",
+              "requirement": "SHOULD support SOPInstanceUID query parameter",
+              "test_id": "QIDO_009", 
+              "test_name": "SOP Instance UID Query Support",
+              "classification": "recommended",
+              "description": "Server SHOULD support SOPInstanceUID attribute for unique instance identification"
+            }
+          ]
+        }
+      },
+      "query_parameters": {
+        "includefield": {
+          "description": "Include specific DICOM attributes in response",
+          "example": "includefield=PatientName,StudyDate",
+          "classification": "recommended"
+        },
+        "fuzzymatching": {
+          "description": "Enable fuzzy string matching for query parameters",
+          "example": "fuzzymatching=true",
+          "classification": "optional"
+        },
+        "limit": {
+          "description": "Limit number of results returned",
+          "example": "limit=10",
+          "classification": "recommended"
+        },
+        "offset": {
+          "description": "Skip specified number of results for pagination",
+          "example": "offset=10",
+          "classification": "recommended"
+        }
+      }
+    },
+    "wado": {
+      "name": "WADO-RS (Web Access to DICOM Persistent Objects - Retrieve Service)",
+      "section": "10.4", 
+      "official_reference": "https://www.dicomstandard.org/using/dicomweb/retrieve-wado-rs-and-wado-uri/",
+      "description": "Retrieve operations for downloading DICOM objects and metadata",
+      "endpoints": {
+        "study_retrieve": {
+          "url": "/studies/{study}",
+          "method": "GET",
+          "description": "Retrieve entire study as DICOM instances",
+          "requirements": [
+            {
+              "dicom_section": "10.4.1",
+              "requirement": "SHALL implement study retrieval endpoint",
+              "test_id": "WADO_001", 
+              "test_name": "WADO-RS Study Retrieval",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies/{study} for retrieving entire studies"
+            }
+          ]
+        },
+        "series_retrieve": {
+          "url": "/studies/{study}/series/{series}",
+          "method": "GET",
+          "description": "Retrieve entire series as DICOM instances",
+          "requirements": [
+            {
+              "dicom_section": "10.4.1",
+              "requirement": "SHALL implement series retrieval endpoint",
+              "test_id": "WADO_002", 
+              "test_name": "WADO-RS Series Retrieval",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies/{study}/series/{series} for retrieving series"
+            }
+          ]
+        },
+        "instance_retrieve": {
+          "url": "/studies/{study}/series/{series}/instances/{instance}",
+          "method": "GET",
+          "description": "Retrieve individual DICOM instance",
+          "requirements": [
+            {
+              "dicom_section": "10.4.1",
+              "requirement": "SHALL implement instance retrieval endpoint",
+              "test_id": "WADO_003", 
+              "test_name": "WADO-RS Instance Retrieval",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /studies/{study}/series/{series}/instances/{instance}"
+            }
+          ]
+        },
+        "metadata": {
+          "url": "/studies/{study}/series/{series}/instances/{instance}/metadata",
+          "method": "GET",
+          "description": "Retrieve DICOM metadata for an instance",
+          "requirements": [
+            {
+              "dicom_section": "10.4.1.1",
+              "requirement": "SHALL implement metadata retrieval endpoint",
+              "test_id": "WADO_004", 
+              "test_name": "WADO-RS Metadata Endpoint",
+              "classification": "mandatory",
+              "description": "Server SHALL support GET /metadata endpoint for DICOM metadata retrieval"
+            },
+            {
+              "dicom_section": "10.4.1.1",
+              "requirement": "SHALL return application/dicom+json content type",
+              "test_id": "WADO_005",
+              "test_name": "Metadata Response Content-Type", 
+              "classification": "mandatory",
+              "description": "Metadata response SHALL include content-type: application/dicom+json"
+            }
+          ]
+        },
+        "rendered": {
+          "url": "/studies/{study}/series/{series}/instances/{instance}/rendered",
+          "method": "GET", 
+          "description": "Retrieve rendered (image) representation",
+          "requirements": [
+            {
+              "dicom_section": "10.4.2",
+              "requirement": "SHOULD implement rendered image retrieval",
+              "test_id": "WADO_006",
+              "test_name": "Rendered Image Support",
+              "classification": "recommended",
+              "description": "Server SHOULD support /rendered endpoint for image representation retrieval"
+            },
+            {
+              "dicom_section": "10.4.2.1",
+              "requirement": "SHOULD support JPEG image format (image/jpeg)",
+              "test_id": "WADO_007",
+              "test_name": "JPEG Image Format Support",
+              "classification": "recommended", 
+              "description": "Server SHOULD support JPEG format for rendered images"
+            }
+          ]
+        },
+        "frames": {
+          "url": "/studies/{study}/series/{series}/instances/{instance}/frames/{frames}",
+          "method": "GET",
+          "description": "Retrieve specific frames from multi-frame instances",
+          "requirements": [
+            {
+              "dicom_section": "10.4.3", 
+              "requirement": "MAY support frame-specific retrieval",
+              "test_id": "WADO_008",
+              "test_name": "Frame-Specific Retrieval Support",
+              "classification": "optional",
+              "description": "Server MAY support /frames/{frameNumber} for multi-frame instance access"
+            }
+          ]
+        },
+        "bulkdata": {
+          "url": "/{bulkdataURIReference}", 
+          "method": "GET",
+          "description": "Retrieve raw bulk data referenced in DICOM metadata",
+          "requirements": [
+            {
+              "dicom_section": "10.4.4",
+              "requirement": "MAY support bulk data retrieval",
+              "test_id": "WADO_009", 
+              "test_name": "Bulk Data Support",
+              "classification": "optional",
+              "description": "Server MAY provide access to raw bulk data via URI references"
+            }
+          ]
+        }
+      }
+    },
+    "stow": {
+      "name": "STOW-RS (Store Over the Web)",
+      "section": "10.5",
+      "official_reference": "https://www.dicomstandard.org/using/dicomweb/store-stow-rs/",
+      "description": "Store operations for uploading DICOM objects to the archive", 
+      "endpoints": {
+        "studies": {
+          "url": "/studies",
+          "method": "POST",
+          "description": "Store DICOM studies to the archive",
+          "requirements": [
+            {
+              "dicom_section": "10.5.1",
+              "requirement": "SHALL implement STOW-RS Studies endpoint",
+              "test_id": "STOW_001",
+              "test_name": "STOW-RS Studies Endpoint",
+              "classification": "mandatory", 
+              "description": "Server SHALL support POST /studies for storing DICOM objects"
+            },
+            {
+              "dicom_section": "10.5.1",
+              "requirement": "SHALL accept application/dicom content type",
+              "test_id": "STOW_002",
+              "test_name": "DICOM Content-Type Support",
+              "classification": "mandatory",
+              "description": "Server SHALL accept requests with content-type: application/dicom"
+            },
+            {
+              "dicom_section": "10.5.1",
+              "requirement": "SHALL accept application/dicom+json content type",
+              "test_id": "STOW_003",
+              "test_name": "DICOM+JSON Content-Type Support", 
+              "classification": "mandatory",
+              "description": "Server SHALL accept requests with content-type: application/dicom+json"
+            },
+            {
+              "dicom_section": "10.5.1",
+              "requirement": "SHOULD support multiple DICOM objects per request",
+              "test_id": "STOW_004",
+              "test_name": "Multiple Object Storage Support",
+              "classification": "recommended",
+              "description": "Server SHOULD support storing multiple DICOM objects in a single request"
+            }
+          ]
+        },
+        "study_specific": {
+          "url": "/studies/{study}",
+          "method": "POST",
+          "description": "Store instances for a specific study",
+          "requirements": [
+            {
+              "dicom_section": "10.5.1",
+              "requirement": "SHOULD implement study-specific storage endpoint",
+              "test_id": "STOW_005",
+              "test_name": "Study-Specific Storage Support", 
+              "classification": "recommended",
+              "description": "Server SHOULD support POST /studies/{study} for study-specific storage"
+            }
+          ]
+        }
+      },
+      "sop_class_requirements": {
+        "dicom_section": "10.5.2",
+        "requirement": "SHALL validate SOP Class UID",
+        "classification": "mandatory",
+        "description": "Server SHALL validate SOP Class UID (e.g., 1.2.840.10008.1.2.4.50 for lossy JPEG)"
+      }
+    }
+  },
+  "common_requirements": {
+    "http_compliance": {
+      "dicom_section": "General HTTP Requirements",
+      "requirement": "SHALL implement proper HTTP status codes and headers",
+      "classification": "mandatory",
+      "description": "All DICOMweb endpoints SHALL return appropriate HTTP status codes and headers"
+    },
+    "security": {
+      "dicom_section": "Security Requirements", 
+      "requirement": "SHOULD implement transport layer security (HTTPS)",
+      "classification": "recommended",
+      "description": "DICOMweb endpoints SHOULD use HTTPS for healthcare data protection"
+    },
+    "authentication": {
+      "dicom_section": "Authentication Requirements",
+      "requirement": "SHOULD implement proper authentication mechanisms",
+      "classification": "recommended", 
+      "description": "Servers SHOULD implement authentication for production healthcare environments"
+    }
+  },
+  "media_types": {
+    "dicomweb_specified": [
+      {
+        "type": "application/dicom+json",
+        "description": "DICOM metadata in JSON format",
+        "use": "QIDO-RS responses, WADO-RS metadata"
+      },
+      {
+        "type": "application/dicom",
+        "description": "Binary DICOM instances",
+        "use": "WADO-RS instance retrieval, STOW-RS storage"
+      },
+      {
+        "type": "image/jpeg",
+        "description": "JPEG rendered images",
+        "use": "WADO-RS rendered image retrieval"
+      },
+      {
+        "type": "image/png",
+        "description": "PNG rendered images",
+        "use": "WADO-RS rendered image retrieval (optional)"
+      }
+    ]
+  },
+  "performance_requirements": {
+    "response_time": {
+      "dicom_section": "Performance Considerations",
+      "requirement": "SHOULD respond to queries within 2 seconds",
+      "classification": "recommended",
+      "description": "Query operations SHOULD complete within 2 seconds for clinical usability"
+    },
+    "throughput": {
+      "dicom_section": "Concurrent Request Handling", 
+      "requirement": "SHOULD support concurrent request handling",
+      "classification": "recommended",
+      "description": "Server SHOULD handle multiple concurrent requests efficiently"
+    }
+  },
+  "interoperability_requirements": {
+    "vendor_claims": {
+      "dicom_section": "Conformance Statement",
+      "requirement": "SHOULD provide accurate conformance statements",
+      "classification": "recommended",
+      "description": "Vendors SHOULD accurately document their DICOMweb implementation capabilities"
+    },
+    "testing": {
+      "dicom_section": "Implementation Testing",
+      "requirement": "SHOULD support automated testing",
+      "classification": "recommended", 
+      "description": "Implementations SHOULD be designed to support automated conformance testing"
+    }
+  }
+}
