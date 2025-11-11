@@ -1,0 +1,13 @@
+{
+  "vendor": "Orthanc",
+  "product": "Orthanc",
+  "version": "mainline",
+  "base_url": "http://localhost:8042/dicom-web",
+  "detection_method": "orthanc_system_api:http://localhost:8042/system",
+  "server_header": "",
+  "qido_signature": "",
+  "additional_hints": {
+    "api": "Orthanc /system",
+    "plugins": []
+  }
+}

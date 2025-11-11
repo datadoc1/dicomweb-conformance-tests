@@ -1,0 +1,43 @@
+{
+  "Name" : "DICOMweb Test Server",
+  "HttpServerEnabled" : true,
+  "HttpPort" : 8042,
+  "HttpDescribeErrors" : true,
+  "AuthenticationEnabled" : true,
+  "RemoteAccessAllowed" : true,
+  "RegisteredUsers" : {
+    "orthanc" : "orthanc"
+  },
+  
+  "DicomWeb" : {
+    "Enable" : true,
+    "Root" : "/dicom-web/",
+    "EnableWado" : true,
+    "WadoRoot" : "/wado",
+    "ServeUnknown" : true,
+    "StudiesMetadata" : "Full",
+    "SeriesMetadata" : "Full",
+    "EnableMetadataCache": true,
+    "EnablePerformanceLogs": true
+  },
+  
+  "HttpCompressionEnabled" : true,
+  "HttpThreadsCount" : 16,
+  "HttpMaxClients" : 16,
+  
+  "DicomServer" : {
+    "Enabled" : true,
+    "Port" : 4242,
+    "ConnectionTimeout" : 10
+  },
+  
+  "Storage" : {
+    "StorageDirectory" : "/var/lib/orthanc/db",
+    "MaximumStorageSize" : 5000,
+    "MaximumPatientRecords" : 10000
+  },
+  
+  "LogLevel" : 2,
+  "TraceLevel" : 1,
+  "DefaultEncoding" : "Utf8"
+}

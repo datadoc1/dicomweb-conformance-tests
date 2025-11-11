@@ -1,0 +1,2350 @@
+{
+  "report_metadata": {
+    "report_type": "DICOMweb Conformance Test Report",
+    "version": "1.0.0",
+    "generated_at": "2025-11-10T15:53:22.772077",
+    "test_suite_version": "1.0.0",
+    "system_info": {
+      "platform": "Windows",
+      "platform_version": "10.0.26100",
+      "python_version": "3.13.1",
+      "hostname": "DESKTOP-AQCE16I",
+      "timestamp": "2025-11-10T15:53:22.768436"
+    }
+  },
+  "summary": {
+    "total_tests": 53,
+    "passed_tests": 32,
+    "failed_tests": 20,
+    "skipped_tests": 1,
+    "compliance_score": 61.54,
+    "pass_rate": 60.38,
+    "protocol_statistics": {
+      "QIDO": {
+        "total": 17,
+        "passed": 16,
+        "failed": 1,
+        "skipped": 0,
+        "pass_rate": 94.11764705882352
+      },
+      "WADO": {
+        "total": 18,
+        "passed": 10,
+        "failed": 7,
+        "skipped": 1,
+        "pass_rate": 55.55555555555556
+      },
+      "STOW": {
+        "total": 18,
+        "passed": 6,
+        "failed": 12,
+        "skipped": 0,
+        "pass_rate": 33.33333333333333
+      }
+    },
+    "performance_metrics": {
+      "average_response_time": 0.011,
+      "max_response_time": 0.05,
+      "min_response_time": 0.001,
+      "total_response_time": 0.475
+    },
+    "critical_failures": 7,
+    "conformance_level": "ACCEPTABLE",
+    "recommendations_summary": [
+      "Focus on implementing core DICOMweb operations (QIDO-RS, WADO-RS, STOW-RS)",
+      "Review DICOMweb specification compliance and implement missing features"
+    ],
+    "pacs_metadata": {
+      "vendor": "Orthanc",
+      "product": "Orthanc",
+      "version": "mainline",
+      "base_url": "http://localhost:8042/dicom-web",
+      "detection_method": "orthanc_system_api:http://localhost:8042/system",
+      "server_header": "",
+      "qido_signature": "",
+      "additional_hints": {
+        "api": "Orthanc /system",
+        "plugins": []
+      }
+    }
+  },
+  "test_results_by_protocol": {
+    "QIDO": [
+      {
+        "test_name": "Basic Instance Query",
+        "status": "PASS",
+        "message": "Instance query returned 25 results",
+        "response_time": 0.015925884246826172,
+        "timestamp": "2025-11-10T15:53:21.956380",
+        "recommendation": "Instance level query working correctly",
+        "request_details": {
+          "endpoint": "instances",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 25
+        }
+      },
+      {
+        "test_name": "Basic Series Query",
+        "status": "PASS",
+        "message": "Series query returned 2 results",
+        "response_time": 0.0017707347869873047,
+        "timestamp": "2025-11-10T15:53:21.940093",
+        "recommendation": "Series level query working correctly",
+        "request_details": {
+          "endpoint": "series",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 2
+        }
+      },
+      {
+        "test_name": "Content-Type Validation",
+        "status": "PASS",
+        "message": "Content-Type is appropriate: application/dicom+json",
+        "response_time": 0.001577615737915039,
+        "timestamp": "2025-11-10T15:53:21.979328",
+        "recommendation": "Content-Type validation working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "content_type"
+        },
+        "response_details": {
+          "content_type": "application/dicom+json",
+          "status_code": 200
+        }
+      },
+      {
+        "test_name": "Empty Result Query",
+        "status": "PASS",
+        "message": "Empty result query returned 0 results",
+        "response_time": 0.0012061595916748047,
+        "timestamp": "2025-11-10T15:53:21.973847",
+        "recommendation": "Empty result query working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "PatientID": "NONEXISTENT123"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 0
+        }
+      },
+      {
+        "test_name": "Invalid Query Parameters",
+        "status": "PASS",
+        "message": "Invalid query parameters handled with status 200",
+        "response_time": 0.0017549991607666016,
+        "timestamp": "2025-11-10T15:53:21.972222",
+        "recommendation": "Invalid parameter handling working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "InvalidParam": "invalidvalue",
+            "AnotherInvalid": "test"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": "application/dicom+json"
+        }
+      },
+      {
+        "test_name": "QIDO_001/QIDO_002 Studies Endpoint and Content-Type",
+        "status": "PASS",
+        "message": "/studies returned 2 matches with valid application/dicom+json payload",
+        "response_time": 0.0020334720611572266,
+        "timestamp": "2025-11-10T15:53:21.938139",
+        "recommendation": "QIDO-RS Studies endpoint implemented per PS3.18 10.6",
+        "request_details": {
+          "endpoint": "/studies",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": "application/dicom+json",
+          "result_count": 2
+        }
+      },
+      {
+        "test_name": "QIDO_003/QIDO_004 Common Parameter Support",
+        "status": "PASS",
+        "message": "Server supports common QIDO parameters (PatientID, StudyInstanceUID)",
+        "response_time": 0.0018050670623779297,
+        "timestamp": "2025-11-10T15:53:21.959321",
+        "recommendation": "QIDO-RS recommended parameter support implemented",
+        "request_details": {
+          "endpoint": "/studies",
+          "params": {
+            "PatientID": "12345",
+            "StudyInstanceUID": "1.2.3.4.5.6.7.8.9"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 0
+        }
+      },
+      {
+        "test_name": "Query Case Sensitivity",
+        "status": "PASS",
+        "message": "Query case sensitivity handled with status 200",
+        "response_time": 0.0017611980438232422,
+        "timestamp": "2025-11-10T15:53:21.970312",
+        "recommendation": "Case sensitivity parameter handling working",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "PATIENTID": "12345"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": "application/dicom+json"
+        }
+      },
+      {
+        "test_name": "Query Pagination",
+        "status": "PASS",
+        "message": "Pagination test returned 2 and 0 results",
+        "response_time": 0.0033338069915771484,
+        "timestamp": "2025-11-10T15:53:21.977623",
+        "recommendation": "Query pagination working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "pagination"
+        },
+        "response_details": {
+          "status_code_1": 200,
+          "status_code_2": 200,
+          "result_count_1": 2,
+          "result_count_2": 0
+        }
+      },
+      {
+        "test_name": "Query Performance",
+        "status": "PASS",
+        "message": "Average query time: 0.00s, Max: 0.00s",
+        "response_time": 0.0043468475341796875,
+        "timestamp": "2025-11-10T15:53:21.986068",
+        "recommendation": "Query performance is acceptable",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "performance",
+          "iterations": 3
+        },
+        "response_details": {
+          "query_times": [
+            0.0016014575958251953,
+            0.0013718605041503906,
+            0.0013735294342041016
+          ],
+          "average": 0.0014489491780598958,
+          "maximum": 0.0016014575958251953
+        }
+      },
+      {
+        "test_name": "Query with Field Specification",
+        "status": "PASS",
+        "message": "Query with fields returned 2 results",
+        "response_time": 0.001768350601196289,
+        "timestamp": "2025-11-10T15:53:21.966530",
+        "recommendation": "Query with field specification working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "includefield": "PatientID,StudyDate,ModalitiesInStudy"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 2
+        }
+      },
+      {
+        "test_name": "Query with Filters",
+        "status": "PASS",
+        "message": "Query with filters returned 2 results",
+        "response_time": 0.0019996166229248047,
+        "timestamp": "2025-11-10T15:53:21.961494",
+        "recommendation": "Query with filters working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "limit": 10,
+            "offset": 0,
+            "includefield": "all"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 2
+        }
+      },
+      {
+        "test_name": "Query with Fuzzy Matching",
+        "status": "PASS",
+        "message": "Query with fuzzy matching returned status 200",
+        "response_time": 0.0016930103302001953,
+        "timestamp": "2025-11-10T15:53:21.968421",
+        "recommendation": "Query with fuzzy matching working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "fuzzymatching": "true"
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": "application/dicom+json"
+        }
+      },
+      {
+        "test_name": "Query with Limit",
+        "status": "PASS",
+        "message": "Query with limit returned 2 results (max 5)",
+        "response_time": 0.0017216205596923828,
+        "timestamp": "2025-11-10T15:53:21.963388",
+        "recommendation": "Query with limit working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "limit": 5
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 2
+        }
+      },
+      {
+        "test_name": "Query with Offset",
+        "status": "PASS",
+        "message": "Query with offset returned status 200",
+        "response_time": 0.0011038780212402344,
+        "timestamp": "2025-11-10T15:53:21.964619",
+        "recommendation": "Query with offset working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "params": {
+            "offset": 10
+          },
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": "application/dicom+json"
+        }
+      },
+      {
+        "test_name": "Response Format Validation",
+        "status": "PASS",
+        "message": "Response format is valid: 2 items",
+        "response_time": 0.0019345283508300781,
+        "timestamp": "2025-11-10T15:53:21.981440",
+        "recommendation": "Response format validation working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "response_format"
+        },
+        "response_details": {
+          "status_code": 200,
+          "result_count": 2,
+          "is_list": true,
+          "all_dicts": true
+        }
+      },
+      {
+        "test_name": "Basic Patient Query",
+        "status": "FAIL",
+        "message": "Patient query failed with status 404",
+        "response_time": 0.005792856216430664,
+        "timestamp": "2025-11-10T15:53:21.935820",
+        "recommendation": "Check server configuration and authentication",
+        "request_details": {
+          "endpoint": "patients",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/p"
+        }
+      }
+    ],
+    "WADO": [
+      {
+        "test_name": "Accept Header Handling",
+        "status": "PASS",
+        "message": "Accept header handling: 5/5 successful responses",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.042804",
+        "recommendation": "Accept header handling working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "accept_headers"
+        },
+        "response_details": {
+          "accept_results": [
+            {
+              "accept": "application/dicom",
+              "status": 200,
+              "content_type": "application/dicom+json"
+            },
+            {
+              "accept": "application/dicom+json",
+              "status": 200,
+              "content_type": "application/dicom+json"
+            },
+            {
+              "accept": "image/jpeg",
+              "status": 200,
+              "content_type": "application/dicom+json"
+            },
+            {
+              "accept": "*/*",
+              "status": 200,
+              "content_type": "application/dicom+json"
+            },
+            {
+              "accept": "(none)",
+              "status": 200,
+              "content_type": "application/dicom+json"
+            }
+          ],
+          "successful_count": 5
+        }
+      },
+      {
+        "test_name": "Authentication Requirements",
+        "status": "PASS",
+        "message": "Server allows anonymous access: status 200",
+        "response_time": 0.0017666816711425781,
+        "timestamp": "2025-11-10T15:53:22.070842",
+        "recommendation": "Anonymous access allowed - ensure this is intended",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "auth_optional"
+        },
+        "response_details": {
+          "status_code": 200
+        }
+      },
+      {
+        "test_name": "Bulk Data Retrieval",
+        "status": "PASS",
+        "message": "Bulk data endpoint handled with status 404",
+        "response_time": 0.001222372055053711,
+        "timestamp": "2025-11-10T15:53:22.027329",
+        "recommendation": "Bulk data endpoint handling working",
+        "request_details": {
+          "endpoint": "bulkdata/test",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "content_type": "text/plain"
+        }
+      },
+      {
+        "test_name": "Concurrent Retrieval",
+        "status": "PASS",
+        "message": "Concurrent retrieval: 3 requests in 0.00s average",
+        "response_time": 0.013352632522583008,
+        "timestamp": "2025-11-10T15:53:22.060262",
+        "recommendation": "Concurrent retrieval performance is acceptable",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "GET",
+          "test_type": "concurrent",
+          "concurrent_requests": 3
+        },
+        "response_details": {
+          "results": [
+            {
+              "response_time": 0.0028378963470458984,
+              "status": 200,
+              "total_time": 0.002912282943725586
+            },
+            {
+              "response_time": 0.004589557647705078,
+              "status": 200,
+              "total_time": 0.004934072494506836
+            },
+            {
+              "response_time": 0.0053102970123291016,
+              "status": 200,
+              "total_time": 0.005506277084350586
+            }
+          ],
+          "average_time": 0.004450877507527669,
+          "error_count": 0
+        }
+      },
+      {
+        "test_name": "Error Response Handling",
+        "status": "PASS",
+        "message": "Error handling: 3/3 endpoints return proper errors",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.068730",
+        "recommendation": "Error response handling working correctly",
+        "request_details": {
+          "endpoint": "error_handling",
+          "method": "GET",
+          "test_type": "error_responses"
+        },
+        "response_details": {
+          "error_results": [
+            {
+              "endpoint": "studies/invalid_uid/metadata",
+              "description": "Invalid Study UID",
+              "status": 404,
+              "has_error_message": true
+            },
+            {
+              "endpoint": "series/invalid_uid/metadata",
+              "description": "Invalid Series UID",
+              "status": 404,
+              "has_error_message": true
+            },
+            {
+              "endpoint": "instances/invalid_uid/metadata",
+              "description": "Invalid Instance UID",
+              "status": 404,
+              "has_error_message": true
+            }
+          ],
+          "proper_error_count": 3
+        }
+      },
+      {
+        "test_name": "Invalid Instance UID",
+        "status": "PASS",
+        "message": "Invalid instance UID properly rejected with status 404",
+        "response_time": 0.0008754730224609375,
+        "timestamp": "2025-11-10T15:53:22.049002",
+        "recommendation": "Invalid UID handling working correctly",
+        "request_details": {
+          "endpoint": "instances/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+        }
+      },
+      {
+        "test_name": "Invalid Series UID",
+        "status": "PASS",
+        "message": "Invalid series UID properly rejected with status 404",
+        "response_time": 0.0008025169372558594,
+        "timestamp": "2025-11-10T15:53:22.047990",
+        "recommendation": "Invalid UID handling working correctly",
+        "request_details": {
+          "endpoint": "series/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+        }
+      },
+      {
+        "test_name": "Invalid Study UID",
+        "status": "PASS",
+        "message": "Invalid study UID properly rejected with status 404",
+        "response_time": 0.0011675357818603516,
+        "timestamp": "2025-11-10T15:53:22.047064",
+        "recommendation": "Invalid UID handling working correctly",
+        "request_details": {
+          "endpoint": "studies/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"Details\" : \"Accessing an inexistent Study with WADO-RS: 1.2.3.4.5.6.7.8.9.10.11.12.13.14.15//\",\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Accessing an inexistent item\""
+        }
+      },
+      {
+        "test_name": "Malformed Request",
+        "status": "PASS",
+        "message": "Malformed request properly rejected with status 404",
+        "response_time": 0.0010037422180175781,
+        "timestamp": "2025-11-10T15:53:22.050148",
+        "recommendation": "Malformed request handling working correctly",
+        "request_details": {
+          "endpoint": "studies/invalid/endpoint/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+        }
+      },
+      {
+        "test_name": "Study Metadata Retrieval",
+        "status": "PASS",
+        "message": "Study metadata retrieved successfully",
+        "response_time": 0.003425121307373047,
+        "timestamp": "2025-11-10T15:53:22.010526",
+        "recommendation": "Study metadata retrieval working correctly",
+        "request_details": {
+          "endpoint": "studies/1.2.826.0.1.3680043.8.1055.1.20111103111148288.98361414.79379639/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 200,
+          "metadata_count": 24
+        }
+      },
+      {
+        "test_name": "Content-Type Validation",
+        "status": "FAIL",
+        "message": "No Accept headers handled properly",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.034697",
+        "recommendation": "Implement proper Accept header handling",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+          "method": "GET",
+          "test_type": "accept_headers"
+        },
+        "response_details": {
+          "accept_results": [
+            {
+              "accept": "application/dicom",
+              "status": 404,
+              "content_type": "text/plain"
+            },
+            {
+              "accept": "application/dicom+json",
+              "status": 404,
+              "content_type": "text/plain"
+            },
+            {
+              "accept": "image/jpeg",
+              "status": 404,
+              "content_type": "text/plain"
+            },
+            {
+              "accept": "image/png",
+              "status": 404,
+              "content_type": "text/plain"
+            },
+            {
+              "accept": "*/*",
+              "status": 404,
+              "content_type": "text/plain"
+            }
+          ],
+          "valid_count": 0
+        }
+      },
+      {
+        "test_name": "DICOM Validation",
+        "status": "FAIL",
+        "message": "DICOM validation: metadata retrieval failed",
+        "response_time": 0.0013322830200195312,
+        "timestamp": "2025-11-10T15:53:22.064271",
+        "recommendation": "Check metadata retrieval implementation",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/dicom+json"
+          }
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+        }
+      },
+      {
+        "test_name": "Frame Retrieval",
+        "status": "SKIP",
+        "message": "No multi-frame instances available for frame retrieval test",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.025911",
+        "recommendation": "Add multi-frame DICOM objects to enable frame retrieval tests",
+        "request_details": {
+          "endpoint": "instances",
+          "method": "GET"
+        },
+        "response_details": {
+          "note": "No multi-frame instances found"
+        }
+      },
+      {
+        "test_name": "Image Retrieval",
+        "status": "FAIL",
+        "message": "Image retrieval failed with status 404",
+        "response_time": 0.0009024143218994141,
+        "timestamp": "2025-11-10T15:53:22.020182",
+        "recommendation": "Check instance UID validity and image support",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/dicom"
+          }
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+        }
+      },
+      {
+        "test_name": "Instance Metadata Retrieval",
+        "status": "FAIL",
+        "message": "Instance metadata retrieval failed with status 404",
+        "response_time": 0.0009264945983886719,
+        "timestamp": "2025-11-10T15:53:22.017265",
+        "recommendation": "Check instance UID validity and server configuration",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+        }
+      },
+      {
+        "test_name": "Large File Performance",
+        "status": "FAIL",
+        "message": "Large file retrieval failed or empty",
+        "response_time": 0.0009279251098632812,
+        "timestamp": "2025-11-10T15:53:22.053490",
+        "recommendation": "Verify large file retrieval implementation",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/dicom"
+          }
+        },
+        "response_details": {
+          "status_code": 404,
+          "size": 277
+        }
+      },
+      {
+        "test_name": "Range Request Support",
+        "status": "FAIL",
+        "message": "Range request failed with status 404",
+        "response_time": 0.0008857250213623047,
+        "timestamp": "2025-11-10T15:53:22.045724",
+        "recommendation": "Implement Range request support for large DICOM objects",
+        "request_details": {
+          "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/dicom",
+            "Range": "bytes=0-1023"
+          }
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+        }
+      },
+      {
+        "test_name": "Series Metadata Retrieval",
+        "status": "FAIL",
+        "message": "Series metadata retrieval failed with status 404",
+        "response_time": 0.0009913444519042969,
+        "timestamp": "2025-11-10T15:53:22.013934",
+        "recommendation": "Check series UID validity and server configuration",
+        "request_details": {
+          "endpoint": "series/1.2.826.0.1.3680043.8.1055.1.20111103111148288.94019146.71622702/metadata",
+          "method": "GET"
+        },
+        "response_details": {
+          "status_code": 404,
+          "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+        }
+      }
+    ],
+    "STOW": [
+      {
+        "test_name": "Multipart Upload",
+        "status": "PASS",
+        "message": "Multipart upload handled with status 200",
+        "response_time": 0.04985189437866211,
+        "timestamp": "2025-11-10T15:53:22.583399",
+        "recommendation": "Multipart upload handling working",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "test_type": "multipart"
+        },
+        "response_details": {
+          "status_code": 200,
+          "content_type": null
+        }
+      },
+      {
+        "test_name": "Store Corrupted DICOM",
+        "status": "PASS",
+        "message": "Corrupted DICOM properly rejected: status 415",
+        "response_time": 0.0011165142059326172,
+        "timestamp": "2025-11-10T15:53:22.684677",
+        "recommendation": "Corrupted DICOM handling working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom",
+          "test_type": "corrupted_dicom"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store DICOM Directory",
+        "status": "PASS",
+        "message": "DICOM directory store handled with status 400",
+        "response_time": 0.04862189292907715,
+        "timestamp": "2025-11-10T15:53:22.533387",
+        "recommendation": "DICOM directory structure handling working",
+        "request_details": {
+          "endpoint": "studies/{study}/series/{series}",
+          "method": "POST",
+          "test_type": "directory_structure"
+        },
+        "response_details": {
+          "status_code": 400,
+          "content_type": "text/plain"
+        }
+      },
+      {
+        "test_name": "Store Invalid DICOM",
+        "status": "PASS",
+        "message": "Invalid DICOM properly rejected with status 415",
+        "response_time": 0.04778409004211426,
+        "timestamp": "2025-11-10T15:53:22.283292",
+        "recommendation": "Invalid DICOM handling working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store Specific Study/Series",
+        "status": "PASS",
+        "message": "Store to specific study/series handled: status 400",
+        "response_time": 0.04451251029968262,
+        "timestamp": "2025-11-10T15:53:22.633415",
+        "recommendation": "Store to specific study/series working",
+        "request_details": {
+          "endpoint": "studies/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/series/1.2.3.4.5.6.7.8.9.10.11.12.13.14.16",
+          "method": "POST",
+          "test_type": "specific_location"
+        },
+        "response_details": {
+          "status_code": 400,
+          "content_type": "text/plain"
+        }
+      },
+      {
+        "test_name": "Store Unsupported Format",
+        "status": "PASS",
+        "message": "Unsupported format properly rejected: status 415",
+        "response_time": 0.04922795295715332,
+        "timestamp": "2025-11-10T15:53:22.734123",
+        "recommendation": "Unsupported format handling working correctly",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "text/plain",
+          "test_type": "unsupported_format"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Basic DICOM Store",
+        "status": "FAIL",
+        "message": "Basic store failed with status 415",
+        "response_time": 0.002893686294555664,
+        "timestamp": "2025-11-10T15:53:22.074275",
+        "recommendation": "Check STOW-RS implementation and server configuration",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Concurrent Uploads",
+        "status": "FAIL",
+        "message": "No concurrent uploads successful",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.588657",
+        "recommendation": "Fix concurrent upload handling issues",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "test_type": "concurrent",
+          "concurrent_uploads": 3
+        },
+        "response_details": {
+          "results": [
+            {
+              "response_time": 0.0027282238006591797,
+              "total_time": 0.002914905548095703,
+              "status": 415,
+              "success": false
+            },
+            {
+              "response_time": 0.004307985305786133,
+              "total_time": 0.004476070404052734,
+              "status": 415,
+              "success": false
+            },
+            {
+              "response_time": 0.0043108463287353516,
+              "total_time": 0.004379749298095703,
+              "status": 415,
+              "success": false
+            }
+          ],
+          "successful_count": 0,
+          "errors": [],
+          "error_count": 0
+        }
+      },
+      {
+        "test_name": "Store Custom Content Type",
+        "status": "FAIL",
+        "message": "No content types accepted",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.183335",
+        "recommendation": "Implement proper content type handling",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "test_type": "content_types"
+        },
+        "response_details": {
+          "content_type_results": [
+            {
+              "content_type": "application/octet-stream",
+              "status": 415
+            },
+            {
+              "content_type": "multipart/related",
+              "status": 415
+            },
+            {
+              "content_type": "application/dicom",
+              "status": 415
+            }
+          ],
+          "successful_count": 0
+        }
+      },
+      {
+        "test_name": "Store Different Modalities",
+        "status": "FAIL",
+        "message": "No modality stores successful",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.484527",
+        "recommendation": "Fix modality-specific store implementation",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "test_type": "modalities",
+          "modalities": [
+            "CT",
+            "MR",
+            "US",
+            "CR",
+            "DX"
+          ]
+        },
+        "response_details": {
+          "modality_results": [
+            {
+              "modality": "CT",
+              "status": 415,
+              "success": false
+            },
+            {
+              "modality": "MR",
+              "status": 415,
+              "success": false
+            },
+            {
+              "modality": "US",
+              "status": 415,
+              "success": false
+            },
+            {
+              "modality": "CR",
+              "status": 415,
+              "success": false
+            },
+            {
+              "modality": "DX",
+              "status": 415,
+              "success": false
+            }
+          ],
+          "successful_count": 0
+        }
+      },
+      {
+        "test_name": "Store Empty Payload",
+        "status": "FAIL",
+        "message": "Empty payload unexpected status: 415",
+        "response_time": 0.048291921615600586,
+        "timestamp": "2025-11-10T15:53:22.683398",
+        "recommendation": "Return proper error for empty payloads",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom",
+          "test_type": "empty_payload"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store Large DICOM",
+        "status": "FAIL",
+        "message": "Large DICOM store failed: status 415",
+        "response_time": 0.04833483695983887,
+        "timestamp": "2025-11-10T15:53:22.383501",
+        "recommendation": "Check large file upload support",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom",
+          "test_type": "large_file"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store Multiple Objects",
+        "status": "FAIL",
+        "message": "No multiple object stores successful",
+        "response_time": 0,
+        "timestamp": "2025-11-10T15:53:22.235125",
+        "recommendation": "Fix multiple object store implementation",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "test_type": "multiple_objects",
+          "object_count": 3
+        },
+        "response_details": {
+          "store_results": [
+            {
+              "object_index": 0,
+              "status": 415,
+              "success": false
+            },
+            {
+              "object_index": 1,
+              "status": 415,
+              "success": false
+            },
+            {
+              "object_index": 2,
+              "status": 415,
+              "success": false
+            }
+          ],
+          "successful_count": 0
+        }
+      },
+      {
+        "test_name": "Store Response Validation",
+        "status": "FAIL",
+        "message": "Store response validation failed: status 415",
+        "response_time": 0.04873013496398926,
+        "timestamp": "2025-11-10T15:53:22.333471",
+        "recommendation": "Check store operation implementation",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store Without Permissions",
+        "status": "FAIL",
+        "message": "Store permission test unexpected status: 415",
+        "response_time": 0.0012598037719726562,
+        "timestamp": "2025-11-10T15:53:22.334964",
+        "recommendation": "Review upload permission requirements",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store with Authentication",
+        "status": "FAIL",
+        "message": "Authenticated store failed with status 415",
+        "response_time": 0.0010933876037597656,
+        "timestamp": "2025-11-10T15:53:22.284521",
+        "recommendation": "Check authentication configuration and permissions",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom",
+          "authenticated": true
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store with Metadata",
+        "status": "FAIL",
+        "message": "Store with metadata failed with status 415",
+        "response_time": 0.0010211467742919922,
+        "timestamp": "2025-11-10T15:53:22.075487",
+        "recommendation": "Check metadata support in STOW-RS implementation",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom+json"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      },
+      {
+        "test_name": "Store with Patient Info",
+        "status": "FAIL",
+        "message": "Store with patient info failed: status 415",
+        "response_time": 0.0013053417205810547,
+        "timestamp": "2025-11-10T15:53:22.634902",
+        "recommendation": "Check patient information handling in store operations",
+        "request_details": {
+          "endpoint": "studies",
+          "method": "POST",
+          "content_type": "application/dicom",
+          "test_type": "patient_info"
+        },
+        "response_details": {
+          "status_code": 415,
+          "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+        }
+      }
+    ]
+  },
+  "all_test_results": [
+    {
+      "test_name": "Basic Instance Query",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Instance query returned 25 results",
+      "response_time": 0.015925884246826172,
+      "timestamp": "2025-11-10T15:53:21.956380",
+      "recommendation": "Instance level query working correctly",
+      "request_details": {
+        "endpoint": "instances",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 25
+      }
+    },
+    {
+      "test_name": "Basic Series Query",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Series query returned 2 results",
+      "response_time": 0.0017707347869873047,
+      "timestamp": "2025-11-10T15:53:21.940093",
+      "recommendation": "Series level query working correctly",
+      "request_details": {
+        "endpoint": "series",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 2
+      }
+    },
+    {
+      "test_name": "Content-Type Validation",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Content-Type is appropriate: application/dicom+json",
+      "response_time": 0.001577615737915039,
+      "timestamp": "2025-11-10T15:53:21.979328",
+      "recommendation": "Content-Type validation working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "content_type"
+      },
+      "response_details": {
+        "content_type": "application/dicom+json",
+        "status_code": 200
+      }
+    },
+    {
+      "test_name": "Empty Result Query",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Empty result query returned 0 results",
+      "response_time": 0.0012061595916748047,
+      "timestamp": "2025-11-10T15:53:21.973847",
+      "recommendation": "Empty result query working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "PatientID": "NONEXISTENT123"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 0
+      }
+    },
+    {
+      "test_name": "Invalid Query Parameters",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Invalid query parameters handled with status 200",
+      "response_time": 0.0017549991607666016,
+      "timestamp": "2025-11-10T15:53:21.972222",
+      "recommendation": "Invalid parameter handling working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "InvalidParam": "invalidvalue",
+          "AnotherInvalid": "test"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": "application/dicom+json"
+      }
+    },
+    {
+      "test_name": "QIDO_001/QIDO_002 Studies Endpoint and Content-Type",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "/studies returned 2 matches with valid application/dicom+json payload",
+      "response_time": 0.0020334720611572266,
+      "timestamp": "2025-11-10T15:53:21.938139",
+      "recommendation": "QIDO-RS Studies endpoint implemented per PS3.18 10.6",
+      "request_details": {
+        "endpoint": "/studies",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": "application/dicom+json",
+        "result_count": 2
+      }
+    },
+    {
+      "test_name": "QIDO_003/QIDO_004 Common Parameter Support",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Server supports common QIDO parameters (PatientID, StudyInstanceUID)",
+      "response_time": 0.0018050670623779297,
+      "timestamp": "2025-11-10T15:53:21.959321",
+      "recommendation": "QIDO-RS recommended parameter support implemented",
+      "request_details": {
+        "endpoint": "/studies",
+        "params": {
+          "PatientID": "12345",
+          "StudyInstanceUID": "1.2.3.4.5.6.7.8.9"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 0
+      }
+    },
+    {
+      "test_name": "Query Case Sensitivity",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query case sensitivity handled with status 200",
+      "response_time": 0.0017611980438232422,
+      "timestamp": "2025-11-10T15:53:21.970312",
+      "recommendation": "Case sensitivity parameter handling working",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "PATIENTID": "12345"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": "application/dicom+json"
+      }
+    },
+    {
+      "test_name": "Query Pagination",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Pagination test returned 2 and 0 results",
+      "response_time": 0.0033338069915771484,
+      "timestamp": "2025-11-10T15:53:21.977623",
+      "recommendation": "Query pagination working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "pagination"
+      },
+      "response_details": {
+        "status_code_1": 200,
+        "status_code_2": 200,
+        "result_count_1": 2,
+        "result_count_2": 0
+      }
+    },
+    {
+      "test_name": "Query Performance",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Average query time: 0.00s, Max: 0.00s",
+      "response_time": 0.0043468475341796875,
+      "timestamp": "2025-11-10T15:53:21.986068",
+      "recommendation": "Query performance is acceptable",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "performance",
+        "iterations": 3
+      },
+      "response_details": {
+        "query_times": [
+          0.0016014575958251953,
+          0.0013718605041503906,
+          0.0013735294342041016
+        ],
+        "average": 0.0014489491780598958,
+        "maximum": 0.0016014575958251953
+      }
+    },
+    {
+      "test_name": "Query with Field Specification",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query with fields returned 2 results",
+      "response_time": 0.001768350601196289,
+      "timestamp": "2025-11-10T15:53:21.966530",
+      "recommendation": "Query with field specification working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "includefield": "PatientID,StudyDate,ModalitiesInStudy"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 2
+      }
+    },
+    {
+      "test_name": "Query with Filters",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query with filters returned 2 results",
+      "response_time": 0.0019996166229248047,
+      "timestamp": "2025-11-10T15:53:21.961494",
+      "recommendation": "Query with filters working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "limit": 10,
+          "offset": 0,
+          "includefield": "all"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 2
+      }
+    },
+    {
+      "test_name": "Query with Fuzzy Matching",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query with fuzzy matching returned status 200",
+      "response_time": 0.0016930103302001953,
+      "timestamp": "2025-11-10T15:53:21.968421",
+      "recommendation": "Query with fuzzy matching working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "fuzzymatching": "true"
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": "application/dicom+json"
+      }
+    },
+    {
+      "test_name": "Query with Limit",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query with limit returned 2 results (max 5)",
+      "response_time": 0.0017216205596923828,
+      "timestamp": "2025-11-10T15:53:21.963388",
+      "recommendation": "Query with limit working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "limit": 5
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 2
+      }
+    },
+    {
+      "test_name": "Query with Offset",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Query with offset returned status 200",
+      "response_time": 0.0011038780212402344,
+      "timestamp": "2025-11-10T15:53:21.964619",
+      "recommendation": "Query with offset working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "params": {
+          "offset": 10
+        },
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": "application/dicom+json"
+      }
+    },
+    {
+      "test_name": "Response Format Validation",
+      "protocol": "QIDO",
+      "status": "PASS",
+      "message": "Response format is valid: 2 items",
+      "response_time": 0.0019345283508300781,
+      "timestamp": "2025-11-10T15:53:21.981440",
+      "recommendation": "Response format validation working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "response_format"
+      },
+      "response_details": {
+        "status_code": 200,
+        "result_count": 2,
+        "is_list": true,
+        "all_dicts": true
+      }
+    },
+    {
+      "test_name": "Basic Patient Query",
+      "protocol": "QIDO",
+      "status": "FAIL",
+      "message": "Patient query failed with status 404",
+      "response_time": 0.005792856216430664,
+      "timestamp": "2025-11-10T15:53:21.935820",
+      "recommendation": "Check server configuration and authentication",
+      "request_details": {
+        "endpoint": "patients",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/p"
+      }
+    },
+    {
+      "test_name": "Multipart Upload",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "Multipart upload handled with status 200",
+      "response_time": 0.04985189437866211,
+      "timestamp": "2025-11-10T15:53:22.583399",
+      "recommendation": "Multipart upload handling working",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "test_type": "multipart"
+      },
+      "response_details": {
+        "status_code": 200,
+        "content_type": null
+      }
+    },
+    {
+      "test_name": "Store Corrupted DICOM",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "Corrupted DICOM properly rejected: status 415",
+      "response_time": 0.0011165142059326172,
+      "timestamp": "2025-11-10T15:53:22.684677",
+      "recommendation": "Corrupted DICOM handling working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom",
+        "test_type": "corrupted_dicom"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store DICOM Directory",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "DICOM directory store handled with status 400",
+      "response_time": 0.04862189292907715,
+      "timestamp": "2025-11-10T15:53:22.533387",
+      "recommendation": "DICOM directory structure handling working",
+      "request_details": {
+        "endpoint": "studies/{study}/series/{series}",
+        "method": "POST",
+        "test_type": "directory_structure"
+      },
+      "response_details": {
+        "status_code": 400,
+        "content_type": "text/plain"
+      }
+    },
+    {
+      "test_name": "Store Invalid DICOM",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "Invalid DICOM properly rejected with status 415",
+      "response_time": 0.04778409004211426,
+      "timestamp": "2025-11-10T15:53:22.283292",
+      "recommendation": "Invalid DICOM handling working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store Specific Study/Series",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "Store to specific study/series handled: status 400",
+      "response_time": 0.04451251029968262,
+      "timestamp": "2025-11-10T15:53:22.633415",
+      "recommendation": "Store to specific study/series working",
+      "request_details": {
+        "endpoint": "studies/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/series/1.2.3.4.5.6.7.8.9.10.11.12.13.14.16",
+        "method": "POST",
+        "test_type": "specific_location"
+      },
+      "response_details": {
+        "status_code": 400,
+        "content_type": "text/plain"
+      }
+    },
+    {
+      "test_name": "Store Unsupported Format",
+      "protocol": "STOW",
+      "status": "PASS",
+      "message": "Unsupported format properly rejected: status 415",
+      "response_time": 0.04922795295715332,
+      "timestamp": "2025-11-10T15:53:22.734123",
+      "recommendation": "Unsupported format handling working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "text/plain",
+        "test_type": "unsupported_format"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Basic DICOM Store",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Basic store failed with status 415",
+      "response_time": 0.002893686294555664,
+      "timestamp": "2025-11-10T15:53:22.074275",
+      "recommendation": "Check STOW-RS implementation and server configuration",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Concurrent Uploads",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "No concurrent uploads successful",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.588657",
+      "recommendation": "Fix concurrent upload handling issues",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "test_type": "concurrent",
+        "concurrent_uploads": 3
+      },
+      "response_details": {
+        "results": [
+          {
+            "response_time": 0.0027282238006591797,
+            "total_time": 0.002914905548095703,
+            "status": 415,
+            "success": false
+          },
+          {
+            "response_time": 0.004307985305786133,
+            "total_time": 0.004476070404052734,
+            "status": 415,
+            "success": false
+          },
+          {
+            "response_time": 0.0043108463287353516,
+            "total_time": 0.004379749298095703,
+            "status": 415,
+            "success": false
+          }
+        ],
+        "successful_count": 0,
+        "errors": [],
+        "error_count": 0
+      }
+    },
+    {
+      "test_name": "Store Custom Content Type",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "No content types accepted",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.183335",
+      "recommendation": "Implement proper content type handling",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "test_type": "content_types"
+      },
+      "response_details": {
+        "content_type_results": [
+          {
+            "content_type": "application/octet-stream",
+            "status": 415
+          },
+          {
+            "content_type": "multipart/related",
+            "status": 415
+          },
+          {
+            "content_type": "application/dicom",
+            "status": 415
+          }
+        ],
+        "successful_count": 0
+      }
+    },
+    {
+      "test_name": "Store Different Modalities",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "No modality stores successful",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.484527",
+      "recommendation": "Fix modality-specific store implementation",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "test_type": "modalities",
+        "modalities": [
+          "CT",
+          "MR",
+          "US",
+          "CR",
+          "DX"
+        ]
+      },
+      "response_details": {
+        "modality_results": [
+          {
+            "modality": "CT",
+            "status": 415,
+            "success": false
+          },
+          {
+            "modality": "MR",
+            "status": 415,
+            "success": false
+          },
+          {
+            "modality": "US",
+            "status": 415,
+            "success": false
+          },
+          {
+            "modality": "CR",
+            "status": 415,
+            "success": false
+          },
+          {
+            "modality": "DX",
+            "status": 415,
+            "success": false
+          }
+        ],
+        "successful_count": 0
+      }
+    },
+    {
+      "test_name": "Store Empty Payload",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Empty payload unexpected status: 415",
+      "response_time": 0.048291921615600586,
+      "timestamp": "2025-11-10T15:53:22.683398",
+      "recommendation": "Return proper error for empty payloads",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom",
+        "test_type": "empty_payload"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store Large DICOM",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Large DICOM store failed: status 415",
+      "response_time": 0.04833483695983887,
+      "timestamp": "2025-11-10T15:53:22.383501",
+      "recommendation": "Check large file upload support",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom",
+        "test_type": "large_file"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store Multiple Objects",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "No multiple object stores successful",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.235125",
+      "recommendation": "Fix multiple object store implementation",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "test_type": "multiple_objects",
+        "object_count": 3
+      },
+      "response_details": {
+        "store_results": [
+          {
+            "object_index": 0,
+            "status": 415,
+            "success": false
+          },
+          {
+            "object_index": 1,
+            "status": 415,
+            "success": false
+          },
+          {
+            "object_index": 2,
+            "status": 415,
+            "success": false
+          }
+        ],
+        "successful_count": 0
+      }
+    },
+    {
+      "test_name": "Store Response Validation",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Store response validation failed: status 415",
+      "response_time": 0.04873013496398926,
+      "timestamp": "2025-11-10T15:53:22.333471",
+      "recommendation": "Check store operation implementation",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store Without Permissions",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Store permission test unexpected status: 415",
+      "response_time": 0.0012598037719726562,
+      "timestamp": "2025-11-10T15:53:22.334964",
+      "recommendation": "Review upload permission requirements",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store with Authentication",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Authenticated store failed with status 415",
+      "response_time": 0.0010933876037597656,
+      "timestamp": "2025-11-10T15:53:22.284521",
+      "recommendation": "Check authentication configuration and permissions",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom",
+        "authenticated": true
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store with Metadata",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Store with metadata failed with status 415",
+      "response_time": 0.0010211467742919922,
+      "timestamp": "2025-11-10T15:53:22.075487",
+      "recommendation": "Check metadata support in STOW-RS implementation",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom+json"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Store with Patient Info",
+      "protocol": "STOW",
+      "status": "FAIL",
+      "message": "Store with patient info failed: status 415",
+      "response_time": 0.0013053417205810547,
+      "timestamp": "2025-11-10T15:53:22.634902",
+      "recommendation": "Check patient information handling in store operations",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "POST",
+        "content_type": "application/dicom",
+        "test_type": "patient_info"
+      },
+      "response_details": {
+        "status_code": 415,
+        "response_text": "{\n   \"HttpError\" : \"Unsupported Media Type\",\n   \"HttpStatus\" : 415,\n   \"Message\" : \"Unsupported media type\",\n   \"Method\" : \"POST\",\n   \"OrthancError\" : \"Unsupported media type\",\n   \"OrthancStatus\" : 30"
+      }
+    },
+    {
+      "test_name": "Accept Header Handling",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Accept header handling: 5/5 successful responses",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.042804",
+      "recommendation": "Accept header handling working correctly",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "accept_headers"
+      },
+      "response_details": {
+        "accept_results": [
+          {
+            "accept": "application/dicom",
+            "status": 200,
+            "content_type": "application/dicom+json"
+          },
+          {
+            "accept": "application/dicom+json",
+            "status": 200,
+            "content_type": "application/dicom+json"
+          },
+          {
+            "accept": "image/jpeg",
+            "status": 200,
+            "content_type": "application/dicom+json"
+          },
+          {
+            "accept": "*/*",
+            "status": 200,
+            "content_type": "application/dicom+json"
+          },
+          {
+            "accept": "(none)",
+            "status": 200,
+            "content_type": "application/dicom+json"
+          }
+        ],
+        "successful_count": 5
+      }
+    },
+    {
+      "test_name": "Authentication Requirements",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Server allows anonymous access: status 200",
+      "response_time": 0.0017666816711425781,
+      "timestamp": "2025-11-10T15:53:22.070842",
+      "recommendation": "Anonymous access allowed - ensure this is intended",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "auth_optional"
+      },
+      "response_details": {
+        "status_code": 200
+      }
+    },
+    {
+      "test_name": "Bulk Data Retrieval",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Bulk data endpoint handled with status 404",
+      "response_time": 0.001222372055053711,
+      "timestamp": "2025-11-10T15:53:22.027329",
+      "recommendation": "Bulk data endpoint handling working",
+      "request_details": {
+        "endpoint": "bulkdata/test",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "content_type": "text/plain"
+      }
+    },
+    {
+      "test_name": "Concurrent Retrieval",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Concurrent retrieval: 3 requests in 0.00s average",
+      "response_time": 0.013352632522583008,
+      "timestamp": "2025-11-10T15:53:22.060262",
+      "recommendation": "Concurrent retrieval performance is acceptable",
+      "request_details": {
+        "endpoint": "studies",
+        "method": "GET",
+        "test_type": "concurrent",
+        "concurrent_requests": 3
+      },
+      "response_details": {
+        "results": [
+          {
+            "response_time": 0.0028378963470458984,
+            "status": 200,
+            "total_time": 0.002912282943725586
+          },
+          {
+            "response_time": 0.004589557647705078,
+            "status": 200,
+            "total_time": 0.004934072494506836
+          },
+          {
+            "response_time": 0.0053102970123291016,
+            "status": 200,
+            "total_time": 0.005506277084350586
+          }
+        ],
+        "average_time": 0.004450877507527669,
+        "error_count": 0
+      }
+    },
+    {
+      "test_name": "Error Response Handling",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Error handling: 3/3 endpoints return proper errors",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.068730",
+      "recommendation": "Error response handling working correctly",
+      "request_details": {
+        "endpoint": "error_handling",
+        "method": "GET",
+        "test_type": "error_responses"
+      },
+      "response_details": {
+        "error_results": [
+          {
+            "endpoint": "studies/invalid_uid/metadata",
+            "description": "Invalid Study UID",
+            "status": 404,
+            "has_error_message": true
+          },
+          {
+            "endpoint": "series/invalid_uid/metadata",
+            "description": "Invalid Series UID",
+            "status": 404,
+            "has_error_message": true
+          },
+          {
+            "endpoint": "instances/invalid_uid/metadata",
+            "description": "Invalid Instance UID",
+            "status": 404,
+            "has_error_message": true
+          }
+        ],
+        "proper_error_count": 3
+      }
+    },
+    {
+      "test_name": "Invalid Instance UID",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Invalid instance UID properly rejected with status 404",
+      "response_time": 0.0008754730224609375,
+      "timestamp": "2025-11-10T15:53:22.049002",
+      "recommendation": "Invalid UID handling working correctly",
+      "request_details": {
+        "endpoint": "instances/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+      }
+    },
+    {
+      "test_name": "Invalid Series UID",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Invalid series UID properly rejected with status 404",
+      "response_time": 0.0008025169372558594,
+      "timestamp": "2025-11-10T15:53:22.047990",
+      "recommendation": "Invalid UID handling working correctly",
+      "request_details": {
+        "endpoint": "series/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+      }
+    },
+    {
+      "test_name": "Invalid Study UID",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Invalid study UID properly rejected with status 404",
+      "response_time": 0.0011675357818603516,
+      "timestamp": "2025-11-10T15:53:22.047064",
+      "recommendation": "Invalid UID handling working correctly",
+      "request_details": {
+        "endpoint": "studies/1.2.3.4.5.6.7.8.9.10.11.12.13.14.15/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"Details\" : \"Accessing an inexistent Study with WADO-RS: 1.2.3.4.5.6.7.8.9.10.11.12.13.14.15//\",\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Accessing an inexistent item\""
+      }
+    },
+    {
+      "test_name": "Malformed Request",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Malformed request properly rejected with status 404",
+      "response_time": 0.0010037422180175781,
+      "timestamp": "2025-11-10T15:53:22.050148",
+      "recommendation": "Malformed request handling working correctly",
+      "request_details": {
+        "endpoint": "studies/invalid/endpoint/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+      }
+    },
+    {
+      "test_name": "Study Metadata Retrieval",
+      "protocol": "WADO",
+      "status": "PASS",
+      "message": "Study metadata retrieved successfully",
+      "response_time": 0.003425121307373047,
+      "timestamp": "2025-11-10T15:53:22.010526",
+      "recommendation": "Study metadata retrieval working correctly",
+      "request_details": {
+        "endpoint": "studies/1.2.826.0.1.3680043.8.1055.1.20111103111148288.98361414.79379639/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 200,
+        "metadata_count": 24
+      }
+    },
+    {
+      "test_name": "Content-Type Validation",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "No Accept headers handled properly",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.034697",
+      "recommendation": "Implement proper Accept header handling",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+        "method": "GET",
+        "test_type": "accept_headers"
+      },
+      "response_details": {
+        "accept_results": [
+          {
+            "accept": "application/dicom",
+            "status": 404,
+            "content_type": "text/plain"
+          },
+          {
+            "accept": "application/dicom+json",
+            "status": 404,
+            "content_type": "text/plain"
+          },
+          {
+            "accept": "image/jpeg",
+            "status": 404,
+            "content_type": "text/plain"
+          },
+          {
+            "accept": "image/png",
+            "status": 404,
+            "content_type": "text/plain"
+          },
+          {
+            "accept": "*/*",
+            "status": 404,
+            "content_type": "text/plain"
+          }
+        ],
+        "valid_count": 0
+      }
+    },
+    {
+      "test_name": "DICOM Validation",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "DICOM validation: metadata retrieval failed",
+      "response_time": 0.0013322830200195312,
+      "timestamp": "2025-11-10T15:53:22.064271",
+      "recommendation": "Check metadata retrieval implementation",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+        "method": "GET",
+        "headers": {
+          "Accept": "application/dicom+json"
+        }
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+      }
+    },
+    {
+      "test_name": "Frame Retrieval",
+      "protocol": "WADO",
+      "status": "SKIP",
+      "message": "No multi-frame instances available for frame retrieval test",
+      "response_time": 0,
+      "timestamp": "2025-11-10T15:53:22.025911",
+      "recommendation": "Add multi-frame DICOM objects to enable frame retrieval tests",
+      "request_details": {
+        "endpoint": "instances",
+        "method": "GET"
+      },
+      "response_details": {
+        "note": "No multi-frame instances found"
+      }
+    },
+    {
+      "test_name": "Image Retrieval",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "Image retrieval failed with status 404",
+      "response_time": 0.0009024143218994141,
+      "timestamp": "2025-11-10T15:53:22.020182",
+      "recommendation": "Check instance UID validity and image support",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+        "method": "GET",
+        "headers": {
+          "Accept": "application/dicom"
+        }
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+      }
+    },
+    {
+      "test_name": "Instance Metadata Retrieval",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "Instance metadata retrieval failed with status 404",
+      "response_time": 0.0009264945983886719,
+      "timestamp": "2025-11-10T15:53:22.017265",
+      "recommendation": "Check instance UID validity and server configuration",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+      }
+    },
+    {
+      "test_name": "Large File Performance",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "Large file retrieval failed or empty",
+      "response_time": 0.0009279251098632812,
+      "timestamp": "2025-11-10T15:53:22.053490",
+      "recommendation": "Verify large file retrieval implementation",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+        "method": "GET",
+        "headers": {
+          "Accept": "application/dicom"
+        }
+      },
+      "response_details": {
+        "status_code": 404,
+        "size": 277
+      }
+    },
+    {
+      "test_name": "Range Request Support",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "Range request failed with status 404",
+      "response_time": 0.0008857250213623047,
+      "timestamp": "2025-11-10T15:53:22.045724",
+      "recommendation": "Implement Range request support for large DICOM objects",
+      "request_details": {
+        "endpoint": "instances/1.2.826.0.1.3680043.8.1055.1.20111103111153055.59359533.86462943",
+        "method": "GET",
+        "headers": {
+          "Accept": "application/dicom",
+          "Range": "bytes=0-1023"
+        }
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/i"
+      }
+    },
+    {
+      "test_name": "Series Metadata Retrieval",
+      "protocol": "WADO",
+      "status": "FAIL",
+      "message": "Series metadata retrieval failed with status 404",
+      "response_time": 0.0009913444519042969,
+      "timestamp": "2025-11-10T15:53:22.013934",
+      "recommendation": "Check series UID validity and server configuration",
+      "request_details": {
+        "endpoint": "series/1.2.826.0.1.3680043.8.1055.1.20111103111148288.94019146.71622702/metadata",
+        "method": "GET"
+      },
+      "response_details": {
+        "status_code": 404,
+        "response_text": "{\n   \"HttpError\" : \"Not Found\",\n   \"HttpStatus\" : 404,\n   \"Message\" : \"Unknown resource\",\n   \"Method\" : \"GET\",\n   \"OrthancError\" : \"Unknown resource\",\n   \"OrthancStatus\" : 17,\n   \"Uri\" : \"/dicom-web/s"
+      }
+    }
+  ]
+}

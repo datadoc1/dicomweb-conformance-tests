@@ -17,7 +17,30 @@ import logging
 
 @dataclass
 class TestResult:
-    """Represents the result of a single test."""
+    """Represents the result of a single test.
+
+    This dataclass is intentionally the canonical schema for a test result
+    record. It is extended to carry standards mapping metadata so that
+    reporting and scoring can be driven directly from these fields.
+
+    Attributes:
+        test_name: Name of the test.
+        protocol: DICOMweb protocol (QIDO, WADO, STOW).
+        status: Test status (PASS, FAIL, SKIP).
+        message: Result message.
+        response_time: Time taken for the request in seconds.
+        request_details: Request information (method, URL, params, headers, etc.).
+        response_details: Response information (status, headers, body excerpts).
+        timestamp: When the test was executed (ISO 8601).
+        recommendation: Optional recommendation message for failures/warnings.
+
+        mapping_id: Optional mapping identifier from DICOM_CONFORMANCE_MAPPING.json
+                    (e.g., "QIDO_001", "WADO_004").
+        requirement: Optional textual requirement being asserted
+                     (e.g., "SHALL implement QIDO-RS Studies endpoint").
+        requirement_level: Optional level ("SHALL", "SHOULD", "MAY") used for
+                           standards-aware scoring.
+    """
     test_name: str
     protocol: str  # QIDO, WADO, or STOW
     status: str  # PASS, FAIL, or SKIP
@@ -27,6 +50,9 @@ class TestResult:
     response_details: Dict[str, Any]
     timestamp: str
     recommendation: Optional[str] = None
+    mapping_id: Optional[str] = None
+    requirement: Optional[str] = None
+    requirement_level: Optional[str] = None
 
 
 class DICOMwebBaseTest(ABC):
@@ -120,22 +146,43 @@ class DICOMwebBaseTest(ABC):
         
         return response.status_code in expected_status_codes
     
-    def _record_test_result(self, test_name: str, protocol: str, status: str, 
-                          message: str, response_time: float, 
+    def _record_test_result(self, test_name: str, protocol: str, status: str,
+                          message: str, response_time: float,
                           request_details: Dict, response_details: Dict,
-                          recommendation: str = None):
+                          recommendation: str = None,
+                          mapping_id: str = None,
+                          requirement: str = None,
+                          requirement_level: str = None):
         """
         Record a test result.
-        
+
+        This method is the single source of truth for how low-level tests
+        map into the higher-level DICOM_CONFORMANCE_MAPPING.json requirements.
+
         Args:
-            test_name: Name of the test
+            test_name: Human-readable test name
             protocol: DICOMweb protocol (QIDO, WADO, STOW)
             status: Test status (PASS, FAIL, SKIP)
             message: Result message
             response_time: Time taken for the request
-            request_details: Request information
-            response_details: Response information
+            request_details: Request information (method, URL, params, headers, body)
+            response_details: Response information (status, headers, body excerpts)
             recommendation: Optional recommendation for failures
+            mapping_id: Optional mapping identifier from DICOM_CONFORMANCE_MAPPING.json
+                        (e.g., "QIDO_001", "WADO_004").
+            requirement: Optional textual requirement being asserted
+                        (e.g., "SHALL implement QIDO-RS Studies endpoint").
+            requirement_level: Optional level ("SHALL", "SHOULD", "MAY") to support
+                               strict scoring semantics.
+
+        Notes:
+            - For SHALL requirements, callers MUST only mark PASS when the
+              behavior matches the normative text of PS3.18.
+            - For SHOULD requirements, PASS indicates the recommended feature
+              is implemented; lack of support should typically be SKIP or WARN
+              at reporting time, not FAIL.
+            - For MAY requirements, absence MUST NOT cause FAIL; presence can
+              be credited as PASS.
         """
         result = TestResult(
             test_name=test_name,
@@ -146,7 +193,10 @@ class DICOMwebBaseTest(ABC):
             request_details=request_details,
             response_details=response_details,
             timestamp=datetime.now().isoformat(),
-            recommendation=recommendation
+            recommendation=recommendation,
+            mapping_id=mapping_id,
+            requirement=requirement,
+            requirement_level=requirement_level
         )
         self.test_results.append(result)
         

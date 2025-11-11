@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DICOMweb Conformance Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .header { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }
+        .summary { background-color: #ecf0f1; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .protocol-section { margin: 20px 0; }
+        .test-pass { color: #27ae60; }
+        .test-fail { color: #e74c3c; }
+        .test-skip { color: #f39c12; }
+        .recommendation { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .critical { background-color: #f8d7da; border: 1px solid #f5c6cb; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #34495e; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DICOMweb Conformance Test Report</h1>
+        <p>Generated: 2025-11-10 15:53:22 UTC</p>
+    </div>
+    
+    <div class="summary">
+        <h2>Executive Summary</h2>
+        <p><strong>Total Tests:</strong> 53</p>
+        <p><strong>Passed:</strong> <span class="test-pass">32</span></p>
+        <p><strong>Failed:</strong> <span class="test-fail">20</span></p>
+        <p><strong>Skipped:</span> <span class="test-skip">1</span></p>
+        <p><strong>Pass Rate:</strong> 60.4%</p>
+        <p><strong>Compliance Score:</strong> 61.5%</p>
+        <p><strong>Conformance Level:</strong> ACCEPTABLE</p>
+    </div>
+
+    <div class="recommendation">
+        <h2>Key Recommendations</h2>
+        <ul>
+            <li>Focus on implementing core DICOMweb operations (QIDO-RS, WADO-RS, STOW-RS)</li>
+            <li>Review DICOMweb specification compliance and implement missing features</li>
+        </ul>
+    </div>
+
+    <div class="protocol-section">
+        <h2>QIDO-RS Test Results</h2>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Test Name</th>
+                <th>Response Time</th>
+                <th>Message</th>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Basic Patient Query</td>
+                <td>0.006s</td>
+                <td>Patient query failed with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>QIDO_001/QIDO_002 Studies Endpoint and Content-Type</td>
+                <td>0.002s</td>
+                <td>/studies returned 2 matches with valid application/dicom+json payload</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Basic Series Query</td>
+                <td>0.002s</td>
+                <td>Series query returned 2 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Basic Instance Query</td>
+                <td>0.016s</td>
+                <td>Instance query returned 25 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>QIDO_003/QIDO_004 Common Parameter Support</td>
+                <td>0.002s</td>
+                <td>Server supports common QIDO parameters (PatientID, StudyInstanceUID)</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query with Filters</td>
+                <td>0.002s</td>
+                <td>Query with filters returned 2 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query with Limit</td>
+                <td>0.002s</td>
+                <td>Query with limit returned 2 results (max 5)</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query with Offset</td>
+                <td>0.001s</td>
+                <td>Query with offset returned status 200</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query with Field Specification</td>
+                <td>0.002s</td>
+                <td>Query with fields returned 2 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query with Fuzzy Matching</td>
+                <td>0.002s</td>
+                <td>Query with fuzzy matching returned status 200</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query Case Sensitivity</td>
+                <td>0.002s</td>
+                <td>Query case sensitivity handled with status 200</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Invalid Query Parameters</td>
+                <td>0.002s</td>
+                <td>Invalid query parameters handled with status 200</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Empty Result Query</td>
+                <td>0.001s</td>
+                <td>Empty result query returned 0 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query Pagination</td>
+                <td>0.003s</td>
+                <td>Pagination test returned 2 and 0 results</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Content-Type Validation</td>
+                <td>0.002s</td>
+                <td>Content-Type is appropriate: application/dicom+json</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Response Format Validation</td>
+                <td>0.002s</td>
+                <td>Response format is valid: 2 items</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Query Performance</td>
+                <td>0.004s</td>
+                <td>Average query time: 0.00s, Max: 0.00s</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="protocol-section">
+        <h2>WADO-RS Test Results</h2>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Test Name</th>
+                <th>Response Time</th>
+                <th>Message</th>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Study Metadata Retrieval</td>
+                <td>0.003s</td>
+                <td>Study metadata retrieved successfully</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Series Metadata Retrieval</td>
+                <td>0.001s</td>
+                <td>Series metadata retrieval failed with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Instance Metadata Retrieval</td>
+                <td>0.001s</td>
+                <td>Instance metadata retrieval failed with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Image Retrieval</td>
+                <td>0.001s</td>
+                <td>Image retrieval failed with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-skip">⊘</td>
+                <td>Frame Retrieval</td>
+                <td>0.000s</td>
+                <td>No multi-frame instances available for frame retrieval test</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Bulk Data Retrieval</td>
+                <td>0.001s</td>
+                <td>Bulk data endpoint handled with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Content-Type Validation</td>
+                <td>0.000s</td>
+                <td>No Accept headers handled properly</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Accept Header Handling</td>
+                <td>0.000s</td>
+                <td>Accept header handling: 5/5 successful responses</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Range Request Support</td>
+                <td>0.001s</td>
+                <td>Range request failed with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Invalid Study UID</td>
+                <td>0.001s</td>
+                <td>Invalid study UID properly rejected with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Invalid Series UID</td>
+                <td>0.001s</td>
+                <td>Invalid series UID properly rejected with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Invalid Instance UID</td>
+                <td>0.001s</td>
+                <td>Invalid instance UID properly rejected with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Malformed Request</td>
+                <td>0.001s</td>
+                <td>Malformed request properly rejected with status 404</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Large File Performance</td>
+                <td>0.001s</td>
+                <td>Large file retrieval failed or empty</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Concurrent Retrieval</td>
+                <td>0.013s</td>
+                <td>Concurrent retrieval: 3 requests in 0.00s average</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>DICOM Validation</td>
+                <td>0.001s</td>
+                <td>DICOM validation: metadata retrieval failed</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Error Response Handling</td>
+                <td>0.000s</td>
+                <td>Error handling: 3/3 endpoints return proper errors</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Authentication Requirements</td>
+                <td>0.002s</td>
+                <td>Server allows anonymous access: status 200</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="protocol-section">
+        <h2>STOW-RS Test Results</h2>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Test Name</th>
+                <th>Response Time</th>
+                <th>Message</th>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Basic DICOM Store</td>
+                <td>0.003s</td>
+                <td>Basic store failed with status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store with Metadata</td>
+                <td>0.001s</td>
+                <td>Store with metadata failed with status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Custom Content Type</td>
+                <td>0.000s</td>
+                <td>No content types accepted</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Multiple Objects</td>
+                <td>0.000s</td>
+                <td>No multiple object stores successful</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Store Invalid DICOM</td>
+                <td>0.048s</td>
+                <td>Invalid DICOM properly rejected with status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store with Authentication</td>
+                <td>0.001s</td>
+                <td>Authenticated store failed with status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Response Validation</td>
+                <td>0.049s</td>
+                <td>Store response validation failed: status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Without Permissions</td>
+                <td>0.001s</td>
+                <td>Store permission test unexpected status: 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Large DICOM</td>
+                <td>0.048s</td>
+                <td>Large DICOM store failed: status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Different Modalities</td>
+                <td>0.000s</td>
+                <td>No modality stores successful</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Store DICOM Directory</td>
+                <td>0.049s</td>
+                <td>DICOM directory store handled with status 400</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Multipart Upload</td>
+                <td>0.050s</td>
+                <td>Multipart upload handled with status 200</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Concurrent Uploads</td>
+                <td>0.000s</td>
+                <td>No concurrent uploads successful</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Store Specific Study/Series</td>
+                <td>0.045s</td>
+                <td>Store to specific study/series handled: status 400</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store with Patient Info</td>
+                <td>0.001s</td>
+                <td>Store with patient info failed: status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-fail">✗</td>
+                <td>Store Empty Payload</td>
+                <td>0.048s</td>
+                <td>Empty payload unexpected status: 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Store Corrupted DICOM</td>
+                <td>0.001s</td>
+                <td>Corrupted DICOM properly rejected: status 415</td>
+            </tr>
+
+            <tr>
+                <td class="test-pass">✓</td>
+                <td>Store Unsupported Format</td>
+                <td>0.049s</td>
+                <td>Unsupported format properly rejected: status 415</td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+</html>

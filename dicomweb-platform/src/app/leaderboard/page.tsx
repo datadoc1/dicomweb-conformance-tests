@@ -1,4 +1,9 @@
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 import { 
   Trophy, 
   Medal, 
@@ -16,70 +21,13 @@ import {
 import Link from 'next/link';
 
 export default async function LeaderboardPage() {
-  // Get vendor performance data from recent tests
-  const vendorData = await prisma.testRun.groupBy({
-    by: ['pacsId'],
-    where: {
-      isPublic: true,
-      status: 'COMPLETED',
-      endTime: {
-        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-      }
-    },
-    _avg: {
-      complianceScore: true,
-      passedTests: true,
-      failedTests: true,
-      totalTests: true,
-      averageResponseTime: true,
-      totalDuration: true
-    },
-    _count: {
-      id: true
-    },
-    _max: {
-      endTime: true
-    }
+  // Get leaderboard data from API
+  const leaderboardResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/leaderboard`, {
+    cache: 'no-cache'
   });
-
-  // Get detailed vendor information
-  const vendorDetails = await prisma.pACS.findMany({
-    where: {
-      id: {
-        in: vendorData.map(v => v.pacsId)
-      }
-    },
-    include: {
-      vendor: true
-    }
-  });
-
-  // Combine and calculate leaderboard data
-  const leaderboardData = vendorData.map((vendor) => {
-    const details = vendorDetails.find(d => d.id === vendor.pacsId);
-    const avgScore = vendor._avg.complianceScore || 0;
-    const testCount = vendor._count.id;
-    const lastTest = vendor._max.endTime;
-    
-    return {
-      vendorName: details?.vendor?.name || 'Unknown Vendor',
-      vendorWebsite: details?.vendor?.website,
-      pacsEndpoint: details?.endpointUrl,
-      pacsName: details?.name,
-      avgComplianceScore: Math.round(avgScore * 10) / 10,
-      totalTests: testCount,
-      lastTestDate: lastTest,
-      avgResponseTime: vendor._avg.averageResponseTime || 0,
-      totalPassed: vendor._avg.passedTests || 0,
-      totalFailed: vendor._avg.failedTests || 0,
-      totalTestsRun: vendor._avg.totalTests || 0
-    };
-  });
-
-  // Sort by compliance score
-  const sortedLeaderboard = leaderboardData
-    .sort((a, b) => b.avgComplianceScore - a.avgComplianceScore)
-    .slice(0, 20); // Top 20
+  const leaderboardData = await leaderboardResponse.json();
+  
+  const sortedLeaderboard = leaderboardData.data || [];
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

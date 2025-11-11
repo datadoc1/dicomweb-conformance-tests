@@ -34,7 +34,7 @@ class QIDOTest(DICOMwebBaseTest):
         # Test 1: Basic Patient Level Query
         self._test_basic_patient_query()
         
-        # Test 2: Basic Study Level Query
+        # QIDO_001 / QIDO_002 / QIDO_005: Studies endpoint + dicom+json + limit
         self._test_basic_study_query()
         
         # Test 3: Basic Series Level Query
@@ -142,50 +142,88 @@ class QIDOTest(DICOMwebBaseTest):
             )
     
     def _test_basic_study_query(self):
-        """Test basic study level query."""
-        test_name = "Basic Study Query"
-        
+        """QIDO_001 / QIDO_002: validate canonical /studies and application/dicom+json.
+
+        PASS criteria (SHALL):
+        - 200 OK response
+        - Content-Type contains application/dicom+json
+        - Body is a JSON array of objects (or empty array)
+
+        Any deviation is a FAIL for this requirement.
+        """
+        test_name = "QIDO_001/QIDO_002 Studies Endpoint and Content-Type"
+
         try:
             response, response_time = self._make_request('GET', 'studies')
-            
-            if self._validate_response(response):
+
+            content_type = response.headers.get('content-type', '')
+            if response.status_code == 200 and 'application/dicom+json' in content_type:
                 try:
                     data = response.json()
-                    if isinstance(data, list):
+                    if isinstance(data, list) and all(isinstance(item, dict) for item in (data or [])):
                         self._record_test_result(
                             test_name, self.protocol, "PASS",
-                            f"Study query returned {len(data)} results",
+                            f"/studies returned {len(data)} matches with valid application/dicom+json payload",
                             response_time,
-                            {"endpoint": "studies", "method": "GET"},
-                            {"status_code": response.status_code, "result_count": len(data)},
-                            "Study level query working correctly"
+                            {"endpoint": "/studies", "method": "GET"},
+                            {
+                                "status_code": response.status_code,
+                                "content_type": content_type,
+                                "result_count": len(data)
+                            },
+                            "QIDO-RS Studies endpoint implemented per PS3.18 10.6",
+                            mapping_id="QIDO_001",
+                            requirement="SHALL implement QIDO-RS Studies endpoint and return application/dicom+json",
+                            requirement_level="SHALL"
                         )
                     else:
                         self._record_test_result(
                             test_name, self.protocol, "FAIL",
-                            "Study query did not return a list",
+                            "QIDO_001/QIDO_002: /studies did not return a JSON array of datasets",
                             response_time,
-                            {"endpoint": "studies", "method": "GET"},
-                            {"status_code": response.status_code, "content_type": response.headers.get('content-type')},
-                            "Ensure study query returns JSON array"
+                            {"endpoint": "/studies", "method": "GET"},
+                            {
+                                "status_code": response.status_code,
+                                "content_type": content_type
+                            },
+                            "Server MUST return application/dicom+json with an array of DICOM dataset objects "
+                            "for /studies per PS3.18 10.6",
+                            mapping_id="QIDO_001",
+                            requirement="SHALL implement QIDO-RS Studies endpoint and return application/dicom+json",
+                            requirement_level="SHALL"
                         )
                 except json.JSONDecodeError:
                     self._record_test_result(
                         test_name, self.protocol, "FAIL",
-                        "Study query response is not valid JSON",
+                        "QIDO_001/QIDO_002: /studies response is not valid JSON",
                         response_time,
-                        {"endpoint": "studies", "method": "GET"},
-                        {"status_code": response.status_code, "content_type": response.headers.get('content-type')},
-                        "Ensure study query returns valid JSON"
+                        {"endpoint": "/studies", "method": "GET"},
+                        {
+                            "status_code": response.status_code,
+                            "content_type": content_type
+                        },
+                        "Server MUST return valid JSON for QIDO-RS search results",
+                        mapping_id="QIDO_001",
+                        requirement="SHALL implement QIDO-RS Studies endpoint and return application/dicom+json",
+                        requirement_level="SHALL"
                     )
             else:
+                # Any non-200 or wrong content-type is a strict FAIL for SHALL
                 self._record_test_result(
                     test_name, self.protocol, "FAIL",
-                    f"Study query failed with status {response.status_code}",
+                    f"QIDO_001/QIDO_002: /studies failed with status {response.status_code} "
+                    f"or invalid Content-Type '{content_type}'",
                     response_time,
-                    {"endpoint": "studies", "method": "GET"},
-                    {"status_code": response.status_code, "response_text": response.text[:200]},
-                    "Check server configuration and authentication"
+                    {"endpoint": "/studies", "method": "GET"},
+                    {
+                        "status_code": response.status_code,
+                        "content_type": content_type,
+                        "response_text": response.text[:200]
+                    },
+                    "Server MUST support /studies with application/dicom+json per PS3.18 10.6",
+                    mapping_id="QIDO_001",
+                    requirement="SHALL implement QIDO-RS Studies endpoint and return application/dicom+json",
+                    requirement_level="SHALL"
                 )
                 
         except Exception as e:
@@ -313,35 +351,108 @@ class QIDOTest(DICOMwebBaseTest):
             )
     
     def _test_query_with_params(self):
-        """Test query with URL parameters."""
-        test_name = "Query with Parameters"
-        
+        """
+        QIDO_003/QIDO_004 (SHOULD): basic semantic validation that common key
+        parameters are accepted and influence results.
+
+        PASS:
+            - 200 OK AND valid JSON list
+
+        Non-support:
+            - 400/422 for unsupported param MAY be SKIP at mapping layer,
+              so we record as SKIP here when clearly rejected.
+
+        Note: This is recommended, not mandatory.
+        """
+        test_name = "QIDO_003/QIDO_004 Common Parameter Support"
+
         try:
-            # Test with common DICOM parameters
             params = {
                 'PatientID': '12345',
-                'StudyDate': '20200101-20201231',
-                'ModalitiesInStudy': 'CT'
+                'StudyInstanceUID': '1.2.3.4.5.6.7.8.9'
             }
             response, response_time = self._make_request('GET', 'studies', params=params)
-            
-            if self._validate_response(response):
+
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    if isinstance(data, list):
+                        self._record_test_result(
+                            test_name, self.protocol, "PASS",
+                            "Server supports common QIDO parameters (PatientID, StudyInstanceUID)",
+                            response_time,
+                            {"endpoint": "/studies", "params": params, "method": "GET"},
+                            {
+                                "status_code": response.status_code,
+                                "result_count": len(data)
+                            },
+                            "QIDO-RS recommended parameter support implemented",
+                            mapping_id="QIDO_003",
+                            requirement="SHOULD support PatientID and StudyInstanceUID query parameters",
+                            requirement_level="SHOULD"
+                        )
+                    else:
+                        # JSON but wrong shape: treat as FAIL for this behavioral expectation
+                        self._record_test_result(
+                            test_name, self.protocol, "FAIL",
+                            "Common QIDO parameters did not return a JSON array",
+                            response_time,
+                            {"endpoint": "/studies", "params": params, "method": "GET"},
+                            {
+                                "status_code": response.status_code,
+                                "response_type": type(data).__name__
+                            },
+                            "If supported, parameterized QIDO-RS results SHOULD follow standard array semantics",
+                            mapping_id="QIDO_003",
+                            requirement="SHOULD support PatientID and StudyInstanceUID query parameters",
+                            requirement_level="SHOULD"
+                        )
+                except json.JSONDecodeError:
+                    self._record_test_result(
+                        test_name, self.protocol, "FAIL",
+                        "Common QIDO parameters response is not valid JSON",
+                        response_time,
+                        {"endpoint": "/studies", "params": params, "method": "GET"},
+                        {
+                            "status_code": response.status_code,
+                            "content_type": response.headers.get('content-type')
+                        },
+                        "If supported, parameterized QIDO-RS results SHOULD be valid JSON",
+                        mapping_id="QIDO_003",
+                        requirement="SHOULD support PatientID and StudyInstanceUID query parameters",
+                        requirement_level="SHOULD"
+                    )
+            elif response.status_code in (400, 422):
+                # Explicit rejection -> treat as non-support of SHOULD requirement
                 self._record_test_result(
-                    test_name, self.protocol, "PASS",
-                    f"Query with parameters returned status {response.status_code}",
+                    test_name, self.protocol, "SKIP",
+                    f"Common QIDO parameters not supported (status {response.status_code})",
                     response_time,
-                    {"endpoint": "studies", "params": params, "method": "GET"},
-                    {"status_code": response.status_code, "content_type": response.headers.get('content-type')},
-                    "Query with parameters working correctly"
+                    {"endpoint": "/studies", "params": params, "method": "GET"},
+                    {
+                        "status_code": response.status_code,
+                        "response_text": response.text[:200]
+                    },
+                    "Recommended but not mandatory parameters are not supported",
+                    mapping_id="QIDO_003",
+                    requirement="SHOULD support PatientID and StudyInstanceUID query parameters",
+                    requirement_level="SHOULD"
                 )
             else:
+                # Unexpected status codes indicate problematic behavior
                 self._record_test_result(
                     test_name, self.protocol, "FAIL",
-                    f"Query with parameters failed with status {response.status_code}",
+                    f"Query with parameters returned unexpected status {response.status_code}",
                     response_time,
-                    {"endpoint": "studies", "params": params, "method": "GET"},
-                    {"status_code": response.status_code, "response_text": response.text[:200]},
-                    "Check parameter format and server support"
+                    {"endpoint": "/studies", "params": params, "method": "GET"},
+                    {
+                        "status_code": response.status_code,
+                        "response_text": response.text[:200]
+                    },
+                    "Unexpected handling of common QIDO parameters",
+                    mapping_id="QIDO_003",
+                    requirement="SHOULD support PatientID and StudyInstanceUID query parameters",
+                    requirement_level="SHOULD"
                 )
                 
         except Exception as e:

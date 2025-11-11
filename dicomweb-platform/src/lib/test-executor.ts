@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { loadDicomMapping } from './dicom-mapping';
 import { SupabaseTestService } from './supabase';
+import { vendorIdentifier, VendorMatch } from './vendor-identification';
 
 export interface TestExecutionConfig {
   pacsUrl: string;
@@ -46,6 +47,12 @@ export interface TestExecutionResult {
   totalDuration: number;
   testResults: TestResult[];
   recommendations: Recommendation[];
+  vendorInfo?: {
+    name: string;
+    website: string;
+    confidence: number;
+    recommendations: string[];
+  };
 }
 
 export interface Recommendation {
@@ -77,12 +84,32 @@ export async function executeDicomTests(
     // Execute the existing Python test framework
     const result = await runPythonTests(config);
     
+    // Identify the vendor using HTTP headers
+    const vendorMatches = await identifyVendor(config.pacsUrl);
+    let vendorInfo = undefined;
+    
+    if (vendorMatches && vendorMatches.length > 0) {
+      const bestMatch = vendorMatches[0];
+      const vendorRecommendations = vendorIdentifier.getVendorRecommendations(
+        bestMatch.vendor, 
+        result.testResults
+      );
+      
+      vendorInfo = {
+        name: bestMatch.vendor.name,
+        website: bestMatch.vendor.website,
+        confidence: bestMatch.confidence,
+        recommendations: vendorRecommendations
+      };
+    }
+    
     const endTime = Date.now();
     const totalDuration = (endTime - startTime) / 1000;
     
     return {
       ...result,
       totalDuration,
+      vendorInfo,
     };
   } finally {
     // Clean up temp config file
@@ -147,8 +174,9 @@ async function runPythonTests(
   config: TestExecutionConfig
 ): Promise<Omit<TestExecutionResult, 'totalDuration'>> {
   return new Promise((resolve, reject) => {
-    // Path to the original test runner
-    const scriptPath = join(process.cwd(), '../../run_tests.py');
+    // Use the process.cwd() which should be the dicomweb-platform root
+    // then navigate to the project root where run_tests.py exists
+    const scriptPath = join(process.cwd(), '..', 'run_tests.py');
     
     // Build command arguments
     const args = [
@@ -357,4 +385,40 @@ function generateRecommendations(testResults: TestResult[], complianceScore: num
   }
   
   return recommendations;
+}
+
+// Vendor identification function
+async function identifyVendor(pacsUrl: string): Promise<VendorMatch[] | null> {
+  try {
+    // Make a simple HEAD request to get server headers
+    const response = await fetch(pacsUrl, {
+      method: 'HEAD',
+      headers: {
+        'User-Agent': 'DICOMweb-Tester/1.0'
+      }
+    });
+    
+    if (!response.ok) {
+      console.log(`Failed to fetch headers from ${pacsUrl}: ${response.status}`);
+      return null;
+    }
+    
+    // Extract headers and server info
+    const headers: { [key: string]: string } = {};
+    response.headers.forEach((value, key) => {
+      headers[key.toLowerCase()] = value;
+    });
+    
+    // Identify vendor using the vendor identifier
+    const vendorMatches = await vendorIdentifier.identifyVendor(pacsUrl, {
+      headers,
+      server: response.headers.get('server') || undefined,
+      statusCode: response.status,
+    });
+    
+    return vendorMatches;
+  } catch (error) {
+    console.warn('Vendor identification failed:', error);
+    return null;
+  }
 }

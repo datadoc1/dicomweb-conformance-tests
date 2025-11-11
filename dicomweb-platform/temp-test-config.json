@@ -1,10 +1,9 @@
 {
-  "pacsUrl": "http://localhost:8042/",
+  "pacsUrl": "http://localhost:8042/dicom-web",
   "username": "orthanc",
-  "password": "orhtanc",
+  "password": "orthanc",
   "protocols": [
-    "QIDO",
-    "WADO"
+    "QIDO"
   ],
   "timeout": 30,
   "verbose": false

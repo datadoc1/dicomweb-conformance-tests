@@ -15,6 +15,7 @@ from colorama import Fore, Back, Style, init
 import platform
 
 from dicomweb_tests.base import TestResult
+from dicomweb_tests.vendor_identification import identify_vendor
 
 
 class ConformanceReportGenerator:
@@ -40,24 +41,31 @@ class ConformanceReportGenerator:
             "timestamp": datetime.now().isoformat()
         }
     
-    def generate_reports(self, test_results: List[TestResult], 
+    def generate_reports(self,
+                        test_results: List[TestResult],
                         output_format: str = "both",
-                        output_file: str = None) -> Dict[str, str]:
+                        output_file: str = None,
+                        pacs_url: Optional[str] = None,
+                        username: Optional[str] = None,
+                        password: Optional[str] = None) -> Dict[str, str]:
         """
         Generate conformance reports in specified format(s).
-        
+
         Args:
             test_results: List of test results to include in report
             output_format: "json", "text", or "both"
             output_file: Optional base filename for output files
-            
+            pacs_url: Optional PACS/DICOMweb base URL (for metadata)
+            username: Optional username for vendor identification requests
+            password: Optional password for vendor identification requests
+
         Returns:
             Dictionary with generated report content and file paths
         """
-        reports = {}
-        
+        reports: Dict[str, str] = {}
+
         # Generate summary statistics
-        summary = self._generate_summary(test_results)
+        summary = self._generate_summary(test_results, pacs_url, username, password)
         
         # Generate JSON report
         if output_format in ["json", "both"]:
@@ -85,13 +93,26 @@ class ConformanceReportGenerator:
         
         return reports
     
-    def _generate_summary(self, test_results: List[TestResult]) -> Dict[str, Any]:
-        """Generate summary statistics from test results."""
+    def _generate_summary(self,
+                          test_results: List[TestResult],
+                          pacs_url: Optional[str],
+                          username: Optional[str],
+                          password: Optional[str]) -> Dict[str, Any]:
+        """Generate summary statistics from test results and attach PACS metadata."""
         total_tests = len(test_results)
         passed_tests = len([r for r in test_results if r.status == "PASS"])
         failed_tests = len([r for r in test_results if r.status == "FAIL"])
         skipped_tests = len([r for r in test_results if r.status == "SKIP"])
         
+        # Best-effort PACS/vendor identification (no credentials persisted)
+        pacs_metadata: Dict[str, Any] = {}
+        if pacs_url:
+            try:
+                vp = identify_vendor(pacs_url, username=username, password=password)
+                pacs_metadata = vp.to_dict()
+            except Exception:
+                pacs_metadata = {}
+
         # Protocol breakdown
         protocol_stats = {}
         for protocol in ["QIDO", "WADO", "STOW"]:
@@ -136,7 +157,8 @@ class ConformanceReportGenerator:
             },
             "critical_failures": len(critical_failures),
             "conformance_level": self._determine_conformance_level(compliance_score),
-            "recommendations_summary": self._generate_recommendations_summary(test_results)
+            "recommendations_summary": self._generate_recommendations_summary(test_results),
+            "pacs_metadata": pacs_metadata,
         }
     
     def _determine_conformance_level(self, compliance_score: float) -> str:
@@ -266,6 +288,22 @@ class ConformanceReportGenerator:
             f"Python Version: {self.system_info['python_version']}",
             ""
         ])
+
+        pacs_meta = summary.get("pacs_metadata") or {}
+        if pacs_meta:
+            report_lines.extend([
+                "PACS UNDER TEST",
+                "-" * 40,
+                f"Vendor: {pacs_meta.get('vendor', 'Unknown')}",
+                f"Product: {pacs_meta.get('product', 'Unknown')}",
+            ])
+            if pacs_meta.get("version"):
+                report_lines.append(f"Version: {pacs_meta.get('version')}")
+            if pacs_meta.get("base_url"):
+                report_lines.append(f"Base URL: {pacs_meta.get('base_url')}")
+            if pacs_meta.get("detection_method"):
+                report_lines.append(f"Detection Method: {pacs_meta.get('detection_method')}")
+            report_lines.append("")
         
         # Executive Summary
         report_lines.extend([

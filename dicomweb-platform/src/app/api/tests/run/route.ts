@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { executeDicomTests } from '@/lib/test-executor';
-import { generateTestIdentifier } from '@/lib/utils/identifiers';
-import { nanoid } from 'nanoid';
+import { executeDicomTests, saveTestResultsToSupabase } from '@/lib/test-executor';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,162 +14,78 @@ export async function POST(request: NextRequest) {
       isPublic,
       organization,
       contactName,
-      contactEmail,
+      contactEmail
     } = body;
 
     // Validate required fields
-    if (!pacsUrl || !protocols || protocols.length === 0) {
-      return NextResponse.json(
-        { error: 'PACS URL and protocols are required' },
-        { status: 400 }
-      );
+    if (!pacsUrl) {
+      return NextResponse.json({
+        error: 'PACS URL is required'
+      }, { status: 400 });
     }
 
-    // Create or find PACS system
-    const pacs = await prisma.pACS.upsert({
-      where: { endpointUrl: pacsUrl },
-      update: {
-        name: organization ? `${organization} PACS` : 'Unknown PACS',
-        updatedAt: new Date(),
-      },
-      create: {
-        name: organization ? `${organization} PACS` : 'Unknown PACS',
-        endpointUrl: pacsUrl,
-        isPublic: isPublic || false,
-      },
-    });
+    if (!protocols || protocols.length === 0) {
+      return NextResponse.json({
+        error: 'At least one protocol must be specified'
+      }, { status: 400 });
+    }
 
-    // Create test run record
-    const runIdentifier = generateTestIdentifier();
-    const testRun = await prisma.testRun.create({
-      data: {
-        pacsId: pacs.id,
-        runIdentifier,
-        status: 'RUNNING',
-        protocolsTested: protocols.join(','),
-        timeout,
-        verbose,
-        isPublic,
-        organization,
-        contactName,
-        contactEmail,
-        startTime: new Date(),
-      },
-    });
-
-    // Execute tests in background
-    executeTestInBackground(testRun.id, {
+    // Create test configuration
+    const testConfig = {
       pacsUrl,
       username,
       password,
-      protocols,
-      timeout,
-      verbose,
-    }).catch(console.error);
+      protocols: protocols || ['QIDO', 'WADO', 'STOW'],
+      timeout: timeout || 30,
+      verbose: verbose || false,
+      isPublic: isPublic !== false, // Default to true
+      organization,
+      contactName,
+      contactEmail,
+      saveToSupabase: true // Enable Supabase saving
+    };
 
+    // Generate a test run ID
+    const testRunId = `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Start test execution in background (async) and save results
+    setTimeout(async () => {
+      try {
+        // Execute the tests
+        const result = await executeDicomTests(testConfig);
+        console.log('Test execution completed for:', testRunId);
+        
+        // Save results to Supabase
+        const saveResult = await saveTestResultsToSupabase(testConfig, result);
+        console.log('Results saved to Supabase:', saveResult);
+        
+        if (!saveResult.success) {
+          console.error('Failed to save test results:', saveResult.error);
+        }
+      } catch (error) {
+        console.error('Test execution failed:', error);
+      }
+    }, 100);
+
+    // Return immediate response with test run ID
     return NextResponse.json({
       success: true,
-      testRunId: testRun.id,
-      runIdentifier: testRun.runIdentifier,
-      message: 'Test started successfully',
+      testRunId,
+      status: 'RUNNING',
+      message: 'Test execution started. Use the testRunId to check status.',
+      config: {
+        pacsUrl,
+        protocols: testConfig.protocols,
+        timeout: testConfig.timeout,
+        isPublic: testConfig.isPublic
+      },
+      estimatedTime: '2-5 minutes'
     });
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Test execution error:', error);
-    return NextResponse.json(
-      { error: 'Failed to start test execution' },
-      { status: 500 }
-    );
-  }
-}
-
-async function executeTestInBackground(
-  testRunId: string,
-  config: {
-    pacsUrl: string;
-    username?: string;
-    password?: string;
-    protocols: string[];
-    timeout: number;
-    verbose: boolean;
-  }
-) {
-  try {
-    console.log(`Starting test execution for run ${testRunId}`);
-    
-    // Execute DICOM tests using our test executor
-    const results = await executeDicomTests(config);
-    
-    // Update test run with results
-    await prisma.testRun.update({
-      where: { id: testRunId },
-      data: {
-        status: 'COMPLETED',
-        endTime: new Date(),
-        totalTests: results.totalTests,
-        passedTests: results.passedTests,
-        failedTests: results.failedTests,
-        skippedTests: results.skippedTests,
-        complianceScore: results.complianceScore,
-        conformanceLevel: results.conformanceLevel,
-        averageResponseTime: results.averageResponseTime,
-        maxResponseTime: results.maxResponseTime,
-        minResponseTime: results.minResponseTime,
-        totalDuration: results.totalDuration,
-        // Generate share token if public
-        ...(config.isPublic && {
-          shareToken: nanoid(10),
-          sharedAt: new Date(),
-        }),
-      },
-    });
-
-    // Store individual test results
-    for (const testResult of results.testResults) {
-      await prisma.testResult.create({
-        data: {
-          testRunId,
-          testId: testResult.testId,
-          testName: testResult.testName,
-          protocol: testResult.protocol,
-          status: testResult.status,
-          message: testResult.message,
-          responseTime: testResult.responseTime,
-          dicomSection: testResult.dicomSection,
-          requirement: testResult.requirement,
-          classification: testResult.classification,
-          requestDetails: testResult.requestDetails,
-          responseDetails: testResult.responseDetails,
-          recommendation: testResult.recommendation,
-        },
-      });
-    }
-
-    // Generate recommendations
-    for (const recommendation of results.recommendations) {
-      await prisma.recommendation.create({
-        data: {
-          testRunId,
-          category: recommendation.category,
-          priority: recommendation.priority,
-          title: recommendation.title,
-          description: recommendation.description,
-          actionableSteps: recommendation.actionableSteps,
-          referenceUrl: recommendation.referenceUrl,
-        },
-      });
-    }
-
-    console.log(`Test execution completed for run ${testRunId}`);
-  } catch (error) {
-    console.error(`Test execution failed for run ${testRunId}:`, error);
-    
-    // Mark test run as failed
-    await prisma.testRun.update({
-      where: { id: testRunId },
-      data: {
-        status: 'FAILED',
-        endTime: new Date(),
-      },
-    });
+    return NextResponse.json({
+      error: error.message || 'Test execution failed'
+    }, { status: 500 });
   }
 }

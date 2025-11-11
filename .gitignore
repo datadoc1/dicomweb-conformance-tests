@@ -1,3 +1,4 @@
 docker_test_suite.sh
 dicomweb_conformance_localhost_8042_20251109_162702.json
 dicomweb_conformance_localhost_8042_20251109_162702.txt
+/dicom-data

@@ -273,19 +273,42 @@ def run_test_suite(args):
         url_host = args.pacs_url.split('//')[1].split('/')[0].replace(':', '_')
         output_base = f"dicomweb_conformance_{url_host}_{timestamp}"
     
-    # Generate reports
+    # Generate reports with PACS metadata
     reports = report_generator.generate_reports(
         test_results=all_results,
         output_format=args.output_format,
-        output_file=output_base
+        output_file=output_base,
+        pacs_url=args.pacs_url,
+        username=args.username,
+        password=args.password,
     )
+
+    # Save raw PACS metadata (if available) to a separate file
+    summary_for_raw = report_generator._generate_summary(
+        all_results,
+        pacs_url=args.pacs_url,
+        username=args.username,
+        password=args.password,
+    )
+    pacs_meta = summary_for_raw.get("pacs_metadata") or {}
+    if pacs_meta:
+        raw_meta_file = f"{output_base}_pacs_metadata.json"
+        try:
+            with open(raw_meta_file, "w", encoding="utf-8") as f:
+                json.dump(pacs_meta, f, indent=2, ensure_ascii=False)
+            reports["pacs_metadata_file"] = raw_meta_file
+            if not args.quiet:
+                print(f"PACS metadata saved to: {raw_meta_file}")
+        except Exception as e:
+            if not args.quiet:
+                print(f"Warning: Failed to write PACS metadata file: {e}")
     
     # Generate HTML report if requested
     if args.html:
         html_file = f"{output_base}.html"
         report_generator.export_to_html(
             test_results=all_results,
-            summary=report_generator._generate_summary(all_results),
+            summary=summary_for_raw,
             output_file=html_file
         )
         reports["html_file"] = html_file
@@ -294,8 +317,7 @@ def run_test_suite(args):
     
     # Display console summary
     if not args.quiet:
-        summary = report_generator._generate_summary(all_results)
-        report_generator.print_console_report(all_results, summary)
+        report_generator.print_console_report(all_results, summary_for_raw)
         print()
     
     # Report file locations

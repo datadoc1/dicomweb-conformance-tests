@@ -28,9 +28,15 @@ const testFormSchema = z.object({
   username: z.string().optional(),
   password: z.string().optional(),
   protocols: z.array(z.enum(["QIDO", "WADO", "STOW"])).min(1, "Select at least one protocol"),
+  outputFormat: z.enum(["text", "json", "both"]),
   timeout: z.number().min(5).max(300),
   verbose: z.boolean(),
+  quiet: z.boolean(),
+  generateHtml: z.boolean(),
+  generateEmail: z.boolean(),
   isPublic: z.boolean(),
+  customOutputFile: z.string().optional(),
+  testDataPath: z.string().optional(),
   organization: z.string().optional(),
   contactName: z.string().optional(),
   contactEmail: z.string().email().optional(),
@@ -52,9 +58,13 @@ export default function HomePage() {
   } = useForm<TestFormData>({
     resolver: zodResolver(testFormSchema),
     defaultValues: {
-      protocols: ["QIDO", "WADO"],
+      protocols: ["QIDO", "WADO", "STOW"],
+      outputFormat: "both",
       timeout: 30,
       verbose: false,
+      quiet: false,
+      generateHtml: false,
+      generateEmail: false,
       isPublic: true, // Auto-check share results publicly
     },
   });
@@ -282,10 +292,10 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Quick Options */}
+            {/* Basic Options */}
             <div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                Options
+                Basic Options
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -302,6 +312,20 @@ export default function HomePage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Output Format
+                  </label>
+                  <select
+                    {...register("outputFormat")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  >
+                    <option value="both">Both (JSON + Text)</option>
+                    <option value="json">JSON Only</option>
+                    <option value="text">Text Only</option>
+                  </select>
+                </div>
+
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <input
@@ -316,6 +340,41 @@ export default function HomePage() {
                   
                   <div className="flex items-center">
                     <input
+                      {...register("generateHtml")}
+                      type="checkbox"
+                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label className="ml-3 text-sm text-gray-700">
+                      Generate HTML report
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      {...register("generateEmail")}
+                      type="checkbox"
+                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label className="ml-3 text-sm text-gray-700">
+                      Generate vendor email template
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      {...register("quiet")}
+                      type="checkbox"
+                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label className="ml-3 text-sm text-gray-700">
+                      Quiet mode (no console output)
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
                       {...register("isPublic")}
                       type="checkbox"
                       defaultChecked={true}
@@ -325,6 +384,93 @@ export default function HomePage() {
                       Share results publicly (for leaderboard)
                     </label>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced Options */}
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Advanced Options
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Custom Output File Name
+                  </label>
+                  <input
+                    {...register("customOutputFile")}
+                    type="text"
+                    placeholder="my_pacs_test_results"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Optional custom filename for output reports
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Test Data Path
+                  </label>
+                  <input
+                    {...register("testDataPath")}
+                    type="text"
+                    placeholder="/path/to/test/data"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Path to custom test data directory (optional)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Contact Information (Optional)
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Organization
+                  </label>
+                  <input
+                    {...register("organization")}
+                    type="text"
+                    placeholder="Your Hospital or Organization"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contact Name
+                  </label>
+                  <input
+                    {...register("contactName")}
+                    type="text"
+                    placeholder="Your Name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contact Email
+                  </label>
+                  <input
+                    {...register("contactEmail")}
+                    type="email"
+                    placeholder="your.email@organization.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Email for test notifications and vendor communications
+                  </p>
                 </div>
               </div>
             </div>
